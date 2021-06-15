@@ -98,6 +98,18 @@ function onMessageHandler (target, user, msg, self) {
 		translate(target,encodeURIComponent(inputtext),"ES");
 		return;
 	}
+	else if(commandName === 'infoen')
+	{
+		if(hasParameter)
+		{
+			client.say(target,`Hey ${inputtext.msg.indexOf(" ")}, my name is HanasuAI. I can translate messages for you! Just type !jp for Japanese translation. I will detect the your input language automatically`);
+		}
+		else
+		{
+			client.say(target,"Hey, my name is HanasuAI. I can translate messages for you! Just type !jp for Japanese translation. I will detect the your input language automatically");
+		}
+		return;
+	}
 }
 
 function translate(target, inputtext, lang)
