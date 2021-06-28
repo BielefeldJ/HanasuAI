@@ -98,6 +98,16 @@ function onMessageHandler (target, user, msg, self) {
 		translate(target,encodeURIComponent(inputtext),"ES");
 		return;
 	}
+	else if(commandName === 'banana')
+	{
+		client.say(target,'djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana djsweeBanana ');
+		return;
+	}
+	else if(commandName === 'suki')
+	{
+		client.say(target,'Bananasan, daisuki 💖💖 djsweeSuki djsweeSuki djsweeSuki djsweeSuki djsweeSuki djsweeSuki ');
+		return;
+	}
 	else if(commandName === 'infoen')
 	{
 		if(hasParameter)
