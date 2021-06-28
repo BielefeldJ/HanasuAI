@@ -111,6 +111,7 @@ function onMessageHandler (target, user, msg, self) {
 	else if(commandName === 'infoen')
 	{
 		client.say(target,"Hey, my name is HanasuAI. I can translate messages for you! Just type !jp for Japanese translation. I will detect the your input language automatically");
+		return;
 	}
 }
 
