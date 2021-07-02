@@ -34,7 +34,7 @@ Command | Description | Usage
 List of requirements
 -------------
 * [tmi.js](https://github.com/tmijs/tmi.js)
-* [DeeplAPI] (https://www.deepl.com/pro?cta=header-prices/)
+* [DeeplAPI](https://www.deepl.com/pro?cta=header-prices/)
 * process
 * nodejs
     
