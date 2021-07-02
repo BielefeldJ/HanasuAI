@@ -10,7 +10,6 @@ const tmiconf = {
 };
 
 const deepl_apikey = "APIKEYHERE";
-
 const botowner = "TWITCHUSERNAME";
 
 module.exports = {tmiconf,deepl_apikey,botowner};
