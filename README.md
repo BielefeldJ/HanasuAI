@@ -2,7 +2,7 @@
 HanasuAI is a bot for translating text messages using the deepl API. The bot automatically detects the language of the message and translates it into the language specified with the command. 
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/BielefeldJ/HanasuAI/blob/main/LICENSE)
-[![Node Version](https://img.shields.io/node/v/tmi.js.svg?style=flat)](https://www.npmjs.org/package/tmi.js)
+[![Node Version](https://img.shields.io/badge/tmi.js-1.8.3-success)](https://www.npmjs.org/package/tmi.js)
 
 
 Commands List
