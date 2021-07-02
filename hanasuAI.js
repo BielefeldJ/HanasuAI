@@ -1,4 +1,3 @@
-const schedule = require('node-schedule');
 const tmi = require('tmi.js');
 const fs = require('fs');
 const proc = require('process');
