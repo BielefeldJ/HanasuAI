@@ -104,6 +104,13 @@ function onMessageHandler (target, user, msg, self) {
 							 "I will detect the your input language automatically");
 		return;
 	}
+	else if (commandName === 'infojp')
+	{
+		client.say(target, "やあ！私の名前は HanasuAI (話すエーアイ)です。" +
+							"あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。" +
+							"入力された言語を自動的に検出します。");
+		return;
+	}
 	else if(commandName === 'stats')
 	{
 		characterUsed(target);

@@ -14,6 +14,7 @@ Command | Cescription | Usage
 ----------------|--------------|-------
 `!stats` | shows the usage of the current month | `!stats`
 `!infoen` | shows a "how to use" message in English | `!infoen`
+`!infojp` | shows a "how to use" message in Japanese | `!infojp`
 `!jp` | translate a text into Japanese | `!jp <text>`
 `!en` | translate a text into English | `!en <text>`
 `!es` | translate a text into Espanol | `!es <text>`
