@@ -1,8 +1,8 @@
 const tmi = require('tmi.js');
 const fs = require('fs');
 const proc = require('process');
-const https = require('https');
 const config = require('./config.js');
+const Translator = require('./translator.js');
 
 //use logfiles
 var access = fs.createWriteStream('access.log')
@@ -17,6 +17,9 @@ const commandPrefix = '!';
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
+
+//Create the Translator
+const translator = new Translator(client);
 
 // Register  event handlers (defined below)
 client.on('message', onMessageHandler);
@@ -90,17 +93,17 @@ function onMessageHandler (target, user, msg, self) {
 	// User commands
 	if (commandName === 'jp' && hasParameter) 
 	{
-		translate(target,encodeURIComponent(inputtext),'JA');
+		translator.translate(target,encodeURIComponent(inputtext),'JA');
 		return;
 	}
 	else if(commandName === 'en' && hasParameter)
 	{
-		translate(target,encodeURIComponent(inputtext),'EN-US');
+		translator.translate(target,encodeURIComponent(inputtext),'EN-US');
 		return;
 	}
 	else if(commandName === 'es' && hasParameter)
 	{
-		translate(target,encodeURIComponent(inputtext),"ES");
+		translator.translate(target,encodeURIComponent(inputtext),"ES");
 		return;
 	}
 	else if(commandName === 'infoen')
@@ -119,97 +122,10 @@ function onMessageHandler (target, user, msg, self) {
 	}
 	else if(commandName === 'stats')
 	{
-		characterUsed(target);
+		translator.characterUsed(target);
 		return;
 	}
 }
-
-function translate(target, inputtext, lang)
-{
-	const url = `https://api-free.deepl.com/v2/translate?auth_key=${config.deepl_apikey}&text=${inputtext}&target_lang=${lang}`;
-
-	const req =https.get(url,res => {
-
-		//API error handling 
-		const { statusCode } = res; 
-		let error;
-		//everything not status code 200 is an error.
-		if (statusCode !== 200) 
-		{
-			error = new Error('Translate request Failed.\n' +
-							  `Error Code: ${statusCode}`);
-		}
-		if (error) 
-		{
-			//send error message to chat
-			client.say(target, `${error.message} Please send this message to @ProfDrBielefeld.`);
-			console.error(error.message);
-			// Consume response data to free up memory
-			res.resume();
-			return;
-		}
-
-		//Evaluate response data
-		let data = [];
-		//write answer to data
-		res.on('data', chunk => {
-			data.push(chunk);
-		  });		
-		res.on('end', () => {
-			//parse answer to JSON
-			answer = JSON.parse(Buffer.concat(data).toString());
-			//get the first JSON object from the date.
-			answer = answer.translations[0];
-			//send answer to twitch chat
-			client.say(target,`${answer.text}`);
-		});
-	}).on('error', err => {		
-		console.err('Error: ', err.message);
-	});
-	req.end();
-} 
-
-function characterUsed(target)
-{
-	const url = `https://api-free.deepl.com/v2/usage?auth_key=${config.deepl_apikey}`;
-
-	const req =https.get(url,res => {
-
-		//API error handling 
-		const { statusCode } = res; 
-		let error;
-		//everything not status code 200 is an error.
-		if (statusCode !== 200) 
-		{
-			error = new Error('Usage request Failed.\n' +
-							  `Error Code: ${statusCode}`);
-		}
-		if (error) 
-		{
-			//send error message to chat
-			client.say(target, `${error.message} Please send this message to @ProfDrBielefeld.`);
-			console.error(error.message);
-			// Consume response data to free up memory
-			res.resume();
-			return;
-		}
-		//Evaluate response data
-		let data = [];
-		//write answer to data
-		res.on('data', chunk => {
-			data.push(chunk);
-		  });		
-		res.on('end', () => {
-			//parse answer to JSON
-			answer = JSON.parse(Buffer.concat(data).toString());
-			// answer contains character_count and character_count
-			client.say(target,`Number of translated characters this month // 今月の翻訳文字数 : ${answer.character_count}`);
-		});
-	}).on('error', err => {
-		console.err('Error: ', err.message);		
-	});;
-	req.end()
-} 
 
 //function for formating time.
 String.prototype.toHHMMSS = function () {
