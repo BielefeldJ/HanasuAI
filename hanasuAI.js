@@ -9,8 +9,8 @@ var access = fs.createWriteStream('access.log')
 var error = fs.createWriteStream('error.log');
 
 // redirect stdout / stderr
-//proc.stdout.write = access.write.bind(access);
-//proc.stderr.write = error.write.bind(error); 
+proc.stdout.write = access.write.bind(access);
+proc.stderr.write = error.write.bind(error); 
 
 // Valid commands start with !
 const commandPrefix = '!';
@@ -47,7 +47,6 @@ function onMessageHandler (target, user, msg, self) {
 	}
 	
 	let commandName, inputtext, hasParameter
-
 	//used to check if the user send parameter
 	if(msg.indexOf(" ")<0)
 	{
@@ -62,7 +61,6 @@ function onMessageHandler (target, user, msg, self) {
 		inputtext = msg.substr(msg.indexOf(" ")).slice(1);
 		hasParameter = true;
 	}
-
 	//Used to check if a user is a mod or not
 	let isMod = user.mod || user['user-type'] === 'mod';
 	let isBroadcaster = target.slice(1) === user.username; //check if user broadcaster by comparing current channel with the username of the sender
@@ -110,16 +108,29 @@ function onMessageHandler (target, user, msg, self) {
 	}
 	else if(commandName === 'infoen')
 	{
-		client.say(target,	"Hey, my name is HanasuAI. I can translate messages for you! " +
-							"Just type !jp for Japanese translation or !en for English translation. " + 
-							 "I will detect the your input language automatically");
+		console.log(`3 log ${inputtext}`);
+		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! " +
+						"Just type !jp for Japanese translation or !en for English translation. " + 
+		 				"I will detect the your input language automatically";
+		if(recipient)
+			infoMsg = recipient + " " + infoMsg;
+		else if(hasParameter)
+			infoMsg = inputtext + " " + infoMsg;
+
+		client.say(target, infoMsg);
 		return;
 	}
 	else if (commandName === 'infojp')
 	{
-		client.say(target, "やあ！私の名前は HanasuAI (話すエーアイ)です。" +
-							"あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。" +
-							"入力された言語を自動的に検出します。");
+		let infoMsg = "やあ！私の名前は HanasuAI (話すエーアイ)です。" +
+						"あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。" +
+						"入力された言語を自動的に検出します。";
+		if(recipient)
+			infoMsg = recipient + " " + infoMsg;
+		else if(hasParameter)
+			infoMsg = inputtext + " " + infoMsg;
+
+		client.say(target, infoMsg);
 		return;
 	}
 	else if(commandName === 'stats')
