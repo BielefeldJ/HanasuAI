@@ -101,11 +101,6 @@ function onMessageHandler (target, user, msg, self) {
 		translator.translate(target,user,recipient,encodeURIComponent(inputtext),'EN-US');
 		return;
 	}
-	else if(commandName === 'es' && hasParameter)
-	{
-		translator.translate(target,user,recipient,encodeURIComponent(inputtext),"ES");
-		return;
-	}
 	else if(commandName === 'infoen')
 	{
 		console.log(`3 log ${inputtext}`);
