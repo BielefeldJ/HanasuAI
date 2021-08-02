@@ -10,7 +10,7 @@ class Translator{
 		this.client = client;
 	}
 
-	translate(target, inputtext, lang)
+	translate(target, user, recipient, inputtext, lang)
 	{
 		const url = DEEPL_API_URL + `translate?auth_key=${config.deepl_apikey}&text=${inputtext}&target_lang=${lang}`;
 
@@ -45,8 +45,13 @@ class Translator{
 				let answer = JSON.parse(Buffer.concat(data).toString());
 				//get the first JSON object from the date.
 				answer = answer.translations[0];
+				if(recipient)
+				{
+					answer.text = recipient + " " + answer.text;
+				}
 				//send answer to twitch chat
 				this.client.say(target,`${answer.text}`);
+
 			});
 		}).on('error', err => {		
 			console.err('Error: ', err.message);

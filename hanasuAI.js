@@ -9,8 +9,8 @@ var access = fs.createWriteStream('access.log')
 var error = fs.createWriteStream('error.log');
 
 // redirect stdout / stderr
-proc.stdout.write = access.write.bind(access);
-proc.stderr.write = error.write.bind(error); 
+//proc.stdout.write = access.write.bind(access);
+//proc.stderr.write = error.write.bind(error); 
 
 // Valid commands start with !
 const commandPrefix = '!';
@@ -34,8 +34,10 @@ function onMessageHandler (target, user, msg, self) {
 
 	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
 	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
+	let recipient = null;
 	if(msg.substr(0,1) === '@')
     {
+		recipient = msg.substr(0, msg.indexOf(" "));
         msg = msg.substr(msg.indexOf(" ") + 1);
     }
 	// This isn't a command since it has no prefix:
@@ -93,17 +95,17 @@ function onMessageHandler (target, user, msg, self) {
 	// User commands
 	if (commandName === 'jp' && hasParameter) 
 	{
-		translator.translate(target,encodeURIComponent(inputtext),'JA');
+		translator.translate(target,user,recipient,encodeURIComponent(inputtext),'JA');
 		return;
 	}
 	else if(commandName === 'en' && hasParameter)
 	{
-		translator.translate(target,encodeURIComponent(inputtext),'EN-US');
+		translator.translate(target,user,recipient,encodeURIComponent(inputtext),'EN-US');
 		return;
 	}
 	else if(commandName === 'es' && hasParameter)
 	{
-		translator.translate(target,encodeURIComponent(inputtext),"ES");
+		translator.translate(target,user,recipient,encodeURIComponent(inputtext),"ES");
 		return;
 	}
 	else if(commandName === 'infoen')
@@ -124,7 +126,7 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		translator.characterUsed(target);
 		return;
-	}
+	}	
 }
 
 //function for formating time.
