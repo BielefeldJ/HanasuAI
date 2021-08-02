@@ -5,13 +5,25 @@ const https = require('https');
 //The class uses the client to send the answers from the API directly to the chat
 const DEEPL_API_URL = "https://api-free.deepl.com/v2/"; //outside the class, because const is not allowed in class?
 class Translator{
+
 	constructor(client)
 	{
 		this.client = client;
-	}
+		this.countjp = 0;
+		this.counten = 0;
+	}	
 
 	translate(target, user, recipient, inputtext, lang)
 	{
+		switch(lang)
+		{
+			case "JA" :
+				this.countjp++;
+				break;
+			case "EN-US" :
+				this.counten++;
+				break;
+		}
 		const url = DEEPL_API_URL + `translate?auth_key=${config.deepl_apikey}&text=${inputtext}&target_lang=${lang}`;
 
 		const req = https.get(url,res => {
@@ -74,7 +86,7 @@ class Translator{
 				error = new Error('Usage request Failed.\n' +
 								`Error Code: ${statusCode}`);
 			}
-			if (error) 
+			if (error)     
 			{
 				//send error message to chat
 				this.client.say(target, `${error.message} Please send this message to @ProfDrBielefeld.`);
@@ -93,7 +105,10 @@ class Translator{
 				//parse answer to JSON
 				let answer = JSON.parse(Buffer.concat(data).toString());
 				// answer contains character_count and character_count
-				this.client.say(target,`Number of translated characters this month // 今月の翻訳文字数 : ${answer.character_count}`);
+				let statsMsg =  `Translated to Japanese: ${this.countjp} times since start; ` +
+							`Translated to English: ${this.counten} times since start; ` +
+							`Total characters this month: ${answer.character_count}`;
+				this.client.say(target,statsMsg);
 			});
 		}).on('error', err => {
 			console.err('Error: ', err.message);		
