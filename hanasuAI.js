@@ -23,15 +23,16 @@ const commandPrefix = '!';
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
 
-//Create the Translator
-const translator = new Translator(client);
-
 // Register  event handlers (defined below)
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
 // Connect to Twitch:
 client.connect();
+
+//Create the Translator
+Translator.setClient(client);
+Translator.setAPIKey(config.deepl_apikey);
 
 // Called every time a message comes in. Handler for all commands
 function onMessageHandler (target, user, msg, self) {
@@ -98,17 +99,16 @@ function onMessageHandler (target, user, msg, self) {
 	// User commands
 	if (commandName === 'jp' && hasParameter) 
 	{
-		translator.translate(target,user,recipient,encodeURIComponent(inputtext),'JA');
+		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
 		return;
 	}
 	else if(commandName === 'en' && hasParameter)
 	{
-		translator.translate(target,user,recipient,encodeURIComponent(inputtext),'EN-US');
+		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
 		return;
 	}
 	else if(commandName === 'infoen')
 	{
-		console.log(`3 log ${inputtext}`);
 		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! " +
 						"Just type !jp for Japanese translation or !en for English translation. " + 
 		 				"I will detect the your input language automatically";
@@ -135,7 +135,7 @@ function onMessageHandler (target, user, msg, self) {
 	}
 	else if(commandName === 'stats')
 	{
-		translator.characterUsed(target);
+		Translator.sendStatsToChat(target);
 		return;
 	}	
 }

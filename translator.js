@@ -1,120 +1,146 @@
-const config = require('./config.js');
-const tmi = require('tmi.js');
+const config = require('./config');
 const https = require('https');
-//this class holds functions for the deepl API
-//The class uses the client to send the answers from the API directly to the chat
-const DEEPL_API_URL = "https://api-free.deepl.com/v2/"; //outside the class, because const is not allowed in class?
-class Translator{
 
-	constructor(client)
-	{
-		this.client = client;
-		this.countjp = 0;
-		this.counten = 0;
-	}	
+//this module holds functions for the deepl API
+//The module uses the client to send the answers from the API directly to the chat
 
-	translate(target, user, recipient, inputtext, lang)
+//Init translator
+var Translator = {};
+
+function initTranslator() {
+	Translator.encounter = 0;
+	Translator.jpcounter = 0;
+}
+initTranslator();
+//set twitch chat client
+Translator.setClient = (client) => {
+	Translator.client = client;
+}
+
+//set api client for deepl
+Translator.setAPIKey = (apikey) => {
+	Translator.APIKEY = apikey;
+}
+
+//counter suff for stats
+Translator.incJPCounter = () =>{
+	Translator.jpcounter++;
+}
+
+Translator.incENCounter = () =>{
+	Translator.encounter++;
+}
+
+const DEEPL_API_URL = "https://api-free.deepl.com/v2/";
+
+//function that translates given text and sends it to twitch chat
+//target = Twitch channel to send the message
+//recipient = if someone taged a person before the command
+//inputtext = text to be translated
+//lang = target language
+Translator.translateToChat = (target, recipient, inputtext, lang) => {
+
+	switch(lang)
 	{
-		switch(lang)
+		case 'JA':
+			Translator.incJPCounter();
+			break;
+		case 'EN_US':
+			Translator.incENCounter();
+			break;
+	}
+	//building request url
+	const url = DEEPL_API_URL + `translate?auth_key=${Translator.APIKEY}&text=${inputtext}&target_lang=${lang}`;
+
+	Translator.sendAPIRequest(url, translated => {
+		if(translated.getstatusCode() === 200)
 		{
-			case "JA" :
-				this.countjp++;
-				break;
-			case "EN-US" :
-				this.counten++;
-				break;
+			let chatmessage = translated.answer();
+			if(recipient)			
+				chatmessage = recipient + " " + chatmessage;			
+			Translator.client.say(target,chatmessage);
 		}
-		const url = DEEPL_API_URL + `translate?auth_key=${config.deepl_apikey}&text=${inputtext}&target_lang=${lang}`;
+		else
+		{
+			let errmsg = `Translate request Failed. Error Code: ${statusCode}`;
+			//send error message to chat
+			Translator.client.say(target, `${errmsg} Please send this message to @${config.botowner}.`);
+			console.error(errmsg);
+		}
+	});
+}
 
-		const req = https.get(url,res => {
+//function to send statistices on how often the bot is used to the twitch chat
+//target = twitch channel target to send the message to
+Translator.sendStatsToChat = (target) => {
+	const url = DEEPL_API_URL + `usage?auth_key=${Translator.APIKEY}`;
+	Translator.sendAPIRequest(url, usage => {
+		if(usage.getstatusCode() === 200)
+		{
+			let statsMsg =  `Translated to Japanese 🇯🇵 : ${Translator.jpcounter} times since start; ` +
+							`Translated to English 🇺🇸 : ${Translator.encounter} times since start; ` +
+							`API usage this month ✏️📈 : ${usage.rawdata().character_count} / 500000`;
+			Translator.client.say(target,statsMsg);
+		}
+		else
+		{
+			let errmsg = `Usage request Failed. Error Code: ${statusCode}`;
+			//send error message to chat
+			Translator.client.say(target, `${errmsg} Please send this message to @${config.botowner}.`);
+			console.error(errmsg);s
+		}			
+	});
+}
 
-			//API error handling 
-			const { statusCode } = res; 
-			let error;
-			//everything not status code 200 is an error.
-			if (statusCode !== 200) 
-			{
-				error = new Error('Translate request Failed.\n' +
-								`Error Code: ${statusCode}`);
-			}
-			if (error) 
-			{
-				//send error message to chat
-				this.client.say(target, `${error.message} Please send this message to @ProfDrBielefeld.`);
-				console.error(error.message);
-				// Consume response data to free up memory
-				res.resume();
-				return;
-			}
-			//Evaluate response data
-			let data = [];
-			//write answer to data
-			res.on('data', chunk => {
-				data.push(chunk);
-			});		
-			res.on('end', () => {
-				//parse answer to JSON
-				let answer = JSON.parse(Buffer.concat(data).toString());
-				//get the first JSON object from the date.
-				answer = answer.translations[0];
-				if(recipient)
-				{
-					answer.text = recipient + " " + answer.text;
-				}
-				//send answer to twitch chat
-				this.client.say(target,`${answer.text}`);
+//Sends the request to the API
+Translator.sendAPIRequest = (url, callback) =>
+{
+	const req = https.get(url, res => {
 
-			});
-		}).on('error', err => {		
-			console.err('Error: ', err.message);
+		//API error handling
+		const {statusCode} = res;
+		if(statusCode !== 200)
+		{
+			callback(new Translator.apiData(null,statusCode));
+			// Consume response data to free up memory
+			res.resume();
+			return;		
+		}
+
+		//collecting res data
+		let resdata = [];
+		res.on('data', chunk =>
+		{
+			resdata.push(chunk);
 		});
-		req.end();
-	} 
 
-	characterUsed(target)
-	{
-		const url = DEEPL_API_URL + `usage?auth_key=${config.deepl_apikey}`;
+		//eval data and send to chat
+		res.on('end', () =>{
+			//parse res to JSON
+			let answer = JSON.parse(Buffer.concat(resdata).toString());
+			callback(new Translator.apiData(answer,statusCode));			
+		});
+	}).on('error', err => {
+		console.err('Error: ', err.message);
+	});
+	req.end();
+}
 
-		const req = https.get(url,res => {
+Translator.apiData = function(apidata,statusCode){
+	this.resdata = apidata;
+	this.statusCode = statusCode;
+}
 
-			//API error handling 
-			const { statusCode } = res; 
-			let error;
-			//everything not status code 200 is an error.
-			if (statusCode !== 200) 
-			{
-				error = new Error('Usage request Failed.\n' +
-								`Error Code: ${statusCode}`);
-			}
-			if (error)     
-			{
-				//send error message to chat
-				this.client.say(target, `${error.message} Please send this message to @ProfDrBielefeld.`);
-				console.error(error.message);
-				// Consume response data to free up memory
-				res.resume();
-				return;
-			}
-			//Evaluate response data
-			let data = [];
-			//write answer to data
-			res.on('data', chunk => {
-				data.push(chunk);
-			});		
-			res.on('end', () => {
-				//parse answer to JSON
-				let answer = JSON.parse(Buffer.concat(data).toString());
-				// answer contains character_count and character_count
-				let statsMsg =  `Translated to Japanese: ${this.countjp} times since start; ` +
-							`Translated to English: ${this.counten} times since start; ` +
-							`Total characters this month: ${answer.character_count}`;
-				this.client.say(target,statsMsg);
-			});
-		}).on('error', err => {
-			console.err('Error: ', err.message);		
-		});;
-		req.end()
-	} 
+Translator.apiData.prototype.rawdata = function () {
+	return this.resdata;
+}
+
+Translator.apiData.prototype.answer = function() {
+	return this.resdata.translations[0].text;
+}
+
+Translator.apiData.prototype.getstatusCode = function() {
+	return this.statusCode;
 }
 
 module.exports = Translator;
