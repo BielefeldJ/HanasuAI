@@ -4,13 +4,18 @@ const proc = require('process');
 const config = require('./config.js');
 const Translator = require('./translator.js');
 
-//use logfiles
-var access = fs.createWriteStream('access.log')
-var error = fs.createWriteStream('error.log');
 
-// redirect stdout / stderr
-proc.stdout.write = access.write.bind(access);
-proc.stderr.write = error.write.bind(error); 
+if(LOGGING.enable)
+{
+	//use logfiles
+	var access = fs.createWriteStream(LOGGING.logfile);
+	var error = fs.createWriteStream(LOGGING.errlogfile);
+
+	// redirect stdout / stderr
+	proc.stdout.write = access.write.bind(access);
+	proc.stderr.write = error.write.bind(error); 
+}
+
 
 // Valid commands start with !
 const commandPrefix = '!';
