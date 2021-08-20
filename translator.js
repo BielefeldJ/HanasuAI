@@ -45,7 +45,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 		case 'JA':
 			Translator.incJPCounter();
 			break;
-		case 'EN_US':
+		case 'EN-US':
 			Translator.incENCounter();
 			break;
 	}
