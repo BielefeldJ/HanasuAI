@@ -3,6 +3,7 @@ const fs = require('fs');
 const proc = require('process');
 const config = require('./config.js');
 const Translator = require('./translator.js');
+const Stats = require('./stats.js');
 
 
 if(LOGGING.enable)
@@ -15,7 +16,6 @@ if(LOGGING.enable)
 	proc.stdout.write = access.write.bind(access);
 	proc.stderr.write = error.write.bind(error); 
 }
-
 
 // Valid commands start with !
 const commandPrefix = '!';
@@ -106,11 +106,13 @@ function onMessageHandler (target, user, msg, self) {
 	if (commandName === 'jp' && hasParameter) 
 	{
 		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
+		Stats.incrementCounter(target.substring(1),'JA');
 		return;
 	}
 	else if(commandName === 'en' && hasParameter)
-	{
+	{		
 		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
+		Stats.incrementCounter(target.substring(1),'EN-US');
 		return;
 	}
 	else if(commandName === 'infoen')
@@ -140,10 +142,35 @@ function onMessageHandler (target, user, msg, self) {
 		return;
 	}
 	else if(commandName === 'stats')
-	{
-		Translator.sendStatsToChat(target);
+	{		
+		Stats.getChannelStats(target.substring(1), channelstats => {
+			client.say(target, `This month I have already translated ${channelstats.toJP}x into Japanese 🇯🇵 and ${channelstats.toEN} times into English 🇺🇸 for ${target.substring(1)}.`);
+		});
 		return;
-	}	
+	}
+	else if (commandName === 'jstats')
+	{
+		Stats.getChannelStats(target.substring(1), channelstats => {
+			client.say(target, `今月は、${target.substring(1)} の日本語🇯🇵に${channelstats.toJP}回、英語🇺🇸に${channelstats.toEN}回翻訳しました。`);
+		});
+		return;
+	}
+	else if(commandName === 'statsg')
+	{
+		Stats.getStatsGlobal((month, total) => {
+			client.say(target, `I have translated ${month.toJP}x into Japanese 🇯🇵 and ${month.toEN}x into English 🇺🇸 this month. `+ 
+								` Since I started counting ${total.toJP}x into Japanese 🇯🇵 and ${total.toEN}x into English 🇺🇸 in total.`);
+		});
+		return;
+	}
+	else if(commandName === 'jstatsg')
+	{
+		Stats.getStatsGlobal((month, total) => {
+			client.say(target, `今月は、${month.toJP}xを日本語🇯🇵に、${month.toEN}xを英語🇺🇸に翻訳しました。 `+ 
+								`とカウントするようになってからは、${total.toJP}xを日本語🇯🇵に、${total.toEN}xを英語🇺🇸に合計しています。`);
+		});
+		return;
+	}
 }
 
 //function for formating time.

@@ -12,7 +12,10 @@ Commands List
 
 Command | Cescription | Usage
 ----------------|--------------|-------
-`!stats` | shows the usage of the current month | `!stats`
+`!stats` | Send the number of translations of the channel | `!stats`
+`!jstats` | Send the number of translations of the channel in Japanese| `!jstats`
+`!statsg` | Send the number of translations across all channel | `!statsg`
+`!jstatsg` | Send the number of translations across all channel in Japanese | `!jstatsg`
 `!infoen` | shows a "how to use" message in English | `!infoen`
 `!infojp` | shows a "how to use" message in Japanese | `!infojp`
 `!jp` | translate a text into Japanese | `!jp <text>`

@@ -7,11 +7,6 @@ const https = require('https');
 //Init translator
 var Translator = {};
 
-function initTranslator() {
-	Translator.encounter = 0;
-	Translator.jpcounter = 0;
-}
-initTranslator();
 //set twitch chat client
 Translator.setClient = (client) => {
 	Translator.client = client;
@@ -40,15 +35,6 @@ const DEEPL_API_URL = "https://api-free.deepl.com/v2/";
 //lang = target language
 Translator.translateToChat = (target, recipient, inputtext, lang) => {
 
-	switch(lang)
-	{
-		case 'JA':
-			Translator.incJPCounter();
-			break;
-		case 'EN-US':
-			Translator.incENCounter();
-			break;
-	}
 	//building request url
 	const url = DEEPL_API_URL + `translate?auth_key=${Translator.APIKEY}&text=${inputtext}&target_lang=${lang}`;
 
@@ -67,28 +53,6 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 			Translator.client.say(target, `${errmsg} Please send this message to @${config.botowner}.`);
 			console.error(errmsg);
 		}
-	});
-}
-
-//function to send statistices on how often the bot is used to the twitch chat
-//target = twitch channel target to send the message to
-Translator.sendStatsToChat = (target) => {
-	const url = DEEPL_API_URL + `usage?auth_key=${Translator.APIKEY}`;
-	Translator.sendAPIRequest(url, usage => {
-		if(usage.getstatusCode() === 200)
-		{
-			let statsMsg =  `Translated to Japanese 🇯🇵 : ${Translator.jpcounter} times since start; ` +
-							`Translated to English 🇺🇸 : ${Translator.encounter} times since start; ` +
-							`API usage this month ✏️📈 : ${usage.rawdata().character_count} / 500000`;
-			Translator.client.say(target,statsMsg);
-		}
-		else
-		{
-			let errmsg = `Usage request Failed. Error Code: ${statusCode}`;
-			//send error message to chat
-			Translator.client.say(target, `${errmsg} Please send this message to @${config.botowner}.`);
-			console.error(errmsg);
-		}			
 	});
 }
 
