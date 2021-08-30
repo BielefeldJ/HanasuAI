@@ -140,17 +140,9 @@ Statistics.getChannelStats = (channelname, callback) => {
 	});
 }
 
-Statistics.getChannelStatsSync = (channelname) => {
-	Statistics.statsdata.perChannel.forEach(channelstats => {
-		if(channelstats.channel === channelname)
-			return channelstats;
-	});
-}
-
 Statistics.getStatsGlobal = (callback) => {
 	callback(Statistics.statsdata.Month,Statistics.statsdata.Total)
 }
-
 
 //function reserts the counter of every channel and the stats of the month
 Statistics.resetChannelStats = () => {
@@ -164,12 +156,8 @@ Statistics.resetChannelStats = () => {
 	Statistics.statsdata.Month.toEN = 0;
 }
 
-Statistics.printData = () => {
-	console.log(Statistics.statsdata);
-}
-
 //This function will be executed every 1. day of the month based on the time zone, this bot is running
-const resetjob = schedule.scheduleJob('0 0 1 * *', () => {
+schedule.scheduleJob('0 0 1 * *', () => {
 	Statistics.resetChannelStats();
   });
 
