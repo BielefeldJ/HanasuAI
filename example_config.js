@@ -17,4 +17,6 @@ LOGGING.errlogfile = "err.log"; // file name for the err log file
 const deepl_apikey = "APIKEYHERE";
 const botowner = "TWITCHUSERNAME";
 
-module.exports = {tmiconf,deepl_apikey,botowner,LOGGING};
+const StatisticsFile = "stats.json";
+
+module.exports = {tmiconf,deepl_apikey,botowner,LOGGING,StatisticsFile};

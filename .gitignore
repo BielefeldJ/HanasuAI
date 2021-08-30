@@ -108,3 +108,6 @@ config.js
 
 #ignore test script
 test.js
+
+#ignore stats file
+stats.json
