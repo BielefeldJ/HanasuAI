@@ -74,6 +74,7 @@ function onMessageHandler (target, user, msg, self) {
 
 	let isBotOwner = user.username === config.botowner; //twitch username of the botowner	
 
+
 	console.log(`[${target} | ${user.username} | (${user['message-type']})] ${commandName} receved as command!`);
 
 	//commands only the Botowner can execute
@@ -83,6 +84,11 @@ function onMessageHandler (target, user, msg, self) {
 		{
 			client.say(target,"Byebye o/");			
 			proc.exit();			
+		}
+		else if(commandName === 'api') //sends the API usage of the month in chat
+		{
+			Translator.sendAPIUsageToChat(target);
+			return;
 		}		
 	}
 	//commands mods and owner can execute

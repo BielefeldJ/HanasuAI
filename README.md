@@ -28,6 +28,7 @@ Command | Description | Usage
 Command | Description | Usage
 ----------------|--------------|-------
 `!shutdown` | Shutdown the bot | `!shutdown`
+`!api`	| Sends API usage to chat | `!api`
 
 
 List of requirements

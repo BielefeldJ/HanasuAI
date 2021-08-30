@@ -87,7 +87,27 @@ Translator.sendStatsToChat = (target) => {
 			let errmsg = `Usage request Failed. Error Code: ${statusCode}`;
 			//send error message to chat
 			Translator.client.say(target, `${errmsg} Please send this message to @${config.botowner}.`);
-			console.error(errmsg);s
+			console.error(errmsg);
+		}			
+	});
+}
+
+//function to send the usage of the API to chat. 
+//target = twitch channel target 
+Translator.sendAPIUsageToChat = (target) => {
+	const url = DEEPL_API_URL + `usage?auth_key=${Translator.APIKEY}`;
+	Translator.sendAPIRequest(url, usage => {
+		if(usage.getstatusCode() === 200)
+		{
+			let statsMsg = `API usage this month ✏️📈 : ${usage.rawdata().character_count} out of 500000 characters used.`;
+			Translator.client.say(target,statsMsg);
+		}
+		else
+		{
+			let errmsg = `Usage request Failed. Error Code: ${statusCode}`;
+			//send error message to chat
+			Translator.client.say(target, `${errmsg}`);
+			console.error(errmsg);
 		}			
 	});
 }
