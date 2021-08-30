@@ -38,6 +38,9 @@ List of requirements
 -------------
 * [tmi.js](https://github.com/tmijs/tmi.js)
 * [DeeplAPI](https://www.deepl.com/pro?cta=header-prices/)
+* [node-schedule](https://github.com/node-schedule/node-schedule)
+* fs
+* https
 * process
 * nodejs
     
