@@ -46,9 +46,22 @@ function onMessageHandler (target, user, msg, self) {
 		recipient = msg.substr(0, msg.indexOf(" "));
         msg = msg.substr(msg.indexOf(" ") + 1);
     }
-	// This isn't a command since it has no prefix:
+	//If no command Prefix: check if message is JP, if yes, translate to eng if not, translate to JP
 	if (msg.substr(0, 1) !== commandPrefix) 
 	{
+		var jp = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
+		if(jp.test(msg))
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
+			Stats.incrementCounter(target.substring(1),'EN-US');
+			return;
+		}
+		else
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
+			Stats.incrementCounter(target.substring(1),'JA');
+			return;
+		}
 		return;
 	}
 	
@@ -103,18 +116,6 @@ function onMessageHandler (target, user, msg, self) {
 		}
 	}
 	// User commands
-	if (commandName === 'jp' && hasParameter) 
-	{
-		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
-		Stats.incrementCounter(target.substring(1),'JA');
-		return;
-	}
-	else if(commandName === 'en' && hasParameter)
-	{		
-		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
-		Stats.incrementCounter(target.substring(1),'EN-US');
-		return;
-	}
 	else if(commandName === 'infoen')
 	{
 		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! " +
