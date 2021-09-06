@@ -33,7 +33,8 @@ client.connect();
 
 //Create the Translator for deepl
 Translator.setClient(client);
-Translator.setAPIKey(config.deepl_apikey);
+Translator.setAPIConfig(config.deeplconfig);
+Translator.setBotowner(config.botowner);
 
 //Create the Translator IBM
 Translator.registerAutoTranslator(new IBMTranslatorV3(config.ibmconfig));

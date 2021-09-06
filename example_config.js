@@ -32,8 +32,11 @@ LOGGING.enable = true; //true = logging to file; false = logging to console
 LOGGING.logfile = "HanasuAI.log";  //file name for the logfile
 LOGGING.errlogfile = "err.log"; // file name for the err log file
 
-//deepl API Key
-const deepl_apikey = "APIKEYHERE";
+//Config for deepl
+const deeplconfig = {
+	apikey: 'APIKEY', // Key for the deepl API
+	serviceUrl: 'SERVICEURL' //URL of the deepl.com API
+}
 
 //Twitch username of the Botowner
 const botowner = "TWITCHUSERNAME";
@@ -41,4 +44,4 @@ const botowner = "TWITCHUSERNAME";
 //File name where the bot logs the statistics
 const StatisticsFile = "stats.json";
 
-module.exports = {tmiconf,ibmconfig,deepl_apikey,botowner,LOGGING,StatisticsFile,AutoTranslateIgnoredUser};
+module.exports = {tmiconf,ibmconfig,deeplconfig,botowner,LOGGING,StatisticsFile,AutoTranslateIgnoredUser};
