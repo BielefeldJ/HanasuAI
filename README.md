@@ -47,6 +47,7 @@ List of requirements
 * [WatsonAPI](https://github.com/watson-developer-cloud/node-sdk)
 * [node-schedule](https://github.com/node-schedule/node-schedule)
 * fs
+* https
 * process
 * nodejs
     
