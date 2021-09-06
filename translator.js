@@ -17,6 +17,11 @@ Translator.setAPIKey = (apikey) => {
 	Translator.APIKEY = apikey;
 }
 
+//register Autotranslator API (IBM)
+Translator.registerAutoTranslator = (autotranslator) => {
+	Translator.autotranslator = autotranslator;
+}
+
 //counter suff for stats
 Translator.incJPCounter = () =>{
 	Translator.jpcounter++;
@@ -108,6 +113,28 @@ Translator.sendAPIRequest = (url, callback) =>
 		console.err('Error: ', err.message);
 	});
 	req.end();
+}
+
+Translator.autotranslate = (target, recipient, inputtext, lang) => 
+{
+	const source = {
+		text: inputtext,
+		target: lang,
+	}
+	Translator.autotranslator.translate(source).then(res => {
+		let chatmessage = res.result.translations[0].translation;
+		if(recipient)			
+			chatmessage = recipient + " " + chatmessage;
+		Translator.client.say(target,chatmessage);
+	}).catch(err =>{
+		if(!err.code === 404) //ignore 404 because 404 = Unable to automatically detect the source language.
+		{
+			console.error(err);
+			let errmsg = `Translate request Failed. Error Code: ${err.code}`;
+			//send error message to chat
+			Translator.client.say(target, `${errmsg} Please send this message to @${config.botowner}.`);
+		}	
+	});
 }
 
 Translator.apiData = function(apidata,statusCode){

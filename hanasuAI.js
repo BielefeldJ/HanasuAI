@@ -4,7 +4,8 @@ const proc = require('process');
 const config = require('./config.js');
 const Translator = require('./translator.js');
 const Stats = require('./stats.js');
-
+const IBMTranslatorV3 = require('ibm-watson/language-translator/v3');
+const { IamAuthenticator } = require('ibm-watson/auth');
 
 if(LOGGING.enable)
 {
@@ -30,13 +31,23 @@ client.on('connected', onConnectedHandler);
 // Connect to Twitch:
 client.connect();
 
-//Create the Translator
+//Create the Translator for deepl
 Translator.setClient(client);
 Translator.setAPIKey(config.deepl_apikey);
+
+//Create the Translator IBM
+Translator.registerAutoTranslator(new IBMTranslatorV3(config.ibmconfig));
+var autotranslatechannel = [];
+
+//all JP characters (Hiragana,Katakana, Common, uncommon and rare kanji )
+const jpcharacters = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
 
 // Called every time a message comes in. Handler for all commands
 function onMessageHandler (target, user, msg, self) {
 	if (self) { return; } // Ignore messages from the bot
+
+	//check if autotranslation is enabled for target channel
+	const autotranslate = autotranslatechannel.includes(target);
 
 	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
 	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
@@ -46,21 +57,21 @@ function onMessageHandler (target, user, msg, self) {
 		recipient = msg.substr(0, msg.indexOf(" "));
         msg = msg.substr(msg.indexOf(" ") + 1);
     }
-	//If no command Prefix: check if message is JP, if yes, translate to eng if not, translate to JP
+	//If no command Prefix: handle autotranslation if enabled.
 	if (msg.substr(0, 1) !== commandPrefix) 
 	{
-		var jp = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
-		if(jp.test(msg))
-		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
-			Stats.incrementCounter(target.substring(1),'EN-US');
-			return;
-		}
-		else
-		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
-			Stats.incrementCounter(target.substring(1),'JA');
-			return;
+		if(autotranslate && !config.AutoTranslateIgnoredUser.includes(user.username))
+		{			
+			if(jpcharacters.test(msg))
+			{
+				Translator.autotranslate(target,recipient,msg,'en');
+				Stats.incrementCounter(target.substring(1),'EN-US');
+			}
+			else
+			{
+				Translator.autotranslate(target,recipient,msg,'ja');
+				Stats.incrementCounter(target.substring(1),'JA');
+			}
 		}
 		return;
 	}
@@ -87,9 +98,6 @@ function onMessageHandler (target, user, msg, self) {
 
 	let isBotOwner = user.username === config.botowner; //twitch username of the botowner	
 
-
-	console.log(`[${target} | ${user.username} | (${user['message-type']})] ${commandName} receved as command!`);
-
 	//commands only the Botowner can execute
 	if(isBotOwner)
 	{
@@ -104,6 +112,37 @@ function onMessageHandler (target, user, msg, self) {
 			return;
 		}		
 	}
+	//commands streamer + botowner
+	if(isBroadcaster || isBotOwner)
+	{
+		if(commandName === 'automode' && hasParameter)
+		{
+			if(inputtext === 'off')
+			{ 	if(autotranslate)
+				{
+					autotranslatechannel = autotranslatechannel.filter(t => t !== target);				
+					client.say(target,"Disabled auto-translation! | オートトランスレーションの無効化");
+					console.log("AUTOMODE INFO: Disabled auto-translation for " + target);
+				}
+				else
+					client.say(target,"Auto-translation is already disabled. | 自動翻訳がすでに無効になっている");
+
+			}
+			else if (inputtext === 'on')
+			{
+				if(!autotranslate) //to avoid double activation
+				{
+					autotranslatechannel.push(target);
+					client.say(target,"Enabled auto-translation! | オートトランスレーションを有効にしました");
+					console.log("AUTOMODE INFO: Enabled auto-translation for " + target);
+				}
+				else
+					client.say(target,"Auto-translation is already enabled. | 自動翻訳がすでに起動している");
+
+			}
+			return;
+		}	
+	}
 	//commands mods and owner can execute
 	if(isModUp || isBotOwner)
 	{
@@ -113,14 +152,26 @@ function onMessageHandler (target, user, msg, self) {
 			var uptime = (time + "").toHHMMSS();
 			client.say(target,`Hey, I am still here. Running since ${uptime}!`);	
 			return;		
-		}
+		}	
 	}
 	// User commands
+	if (commandName === 'jp' && hasParameter) 
+	{
+		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
+		Stats.incrementCounter(target.substring(1),'JA');
+		return;
+	}
+	else if(commandName === 'en' && hasParameter)
+	{		
+		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
+		Stats.incrementCounter(target.substring(1),'EN-US');
+		return;
+	}
 	else if(commandName === 'infoen')
 	{
-		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! " +
-						"Just type !jp for Japanese translation or !en for English translation. " + 
-		 				"I will detect the your input language automatically";
+		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! ";
+		if(!autotranslate)
+			infoMsg = infoMsg + "Just type !jp for Japanese translation or !en for English translation. I will detect the your input language automatically";
 		if(recipient)
 			infoMsg = recipient + " " + infoMsg;
 		else if(hasParameter)
@@ -131,9 +182,9 @@ function onMessageHandler (target, user, msg, self) {
 	}
 	else if (commandName === 'infojp')
 	{
-		let infoMsg = "やあ！私の名前は HanasuAI (話すエーアイ)です。" +
-						"あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。" +
-						"入力された言語を自動的に検出します。";
+		let infoMsg = "やあ！私の名前は HanasuAI (話すエーアイ)です。";						
+		if(!autotranslate)
+			infoMsg = infoMsg + "あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。入力された言語を自動的に検出します。";			
 		if(recipient)
 			infoMsg = recipient + " " + infoMsg;
 		else if(hasParameter)
