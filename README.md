@@ -31,7 +31,7 @@ Command | Description | Usage
 ### Streamer ###
 Command | Description | Usage
 ----------------|--------------|-------
-`!automode` | enables or disables the auto-translation feature | `!automode on|off`
+`!automode` | enables or disables the auto-translation feature | `!automode on\|off`
 
 ### Botowner ###
 Command | Description | Usage
