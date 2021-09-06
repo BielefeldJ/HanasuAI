@@ -20,7 +20,7 @@ Statistics.addChannelToStatsData = (channel) => {
 //write stats to file
 Statistics.writeStatsToFileSync = () =>
 {
-	let data = JSON.stringify(Statistics.statsdata);
+	let data = JSON.stringify(Statistics.statsdata, null, 2);
 	try{
 		fs.writeFileSync(config.StatisticsFile, data)
 	}
@@ -31,7 +31,7 @@ Statistics.writeStatsToFileSync = () =>
 }
 Statistics.writeStatsToFileAsync = () =>
 {
-	let data = JSON.stringify(Statistics.statsdata);
+	let data = JSON.stringify(Statistics.statsdata, null, 2);
 	fs.writeFile(config.StatisticsFile, data, (err) => {
 		if (err) console.err('ERROR WRITING TO STATSFILE ASYNC' + err);;
 	});	
