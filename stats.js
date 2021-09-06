@@ -26,14 +26,14 @@ Statistics.writeStatsToFileSync = () =>
 	}
 	catch(err)
 	{
-		console.err('ERROR WRITING TO STATSFILE SYNC' + err);
+		console.error('ERROR WRITING TO STATSFILE SYNC' + err);
 	}
 }
 Statistics.writeStatsToFileAsync = () =>
 {
 	let data = JSON.stringify(Statistics.statsdata, null, 2);
 	fs.writeFile(config.StatisticsFile, data, (err) => {
-		if (err) console.err('ERROR WRITING TO STATSFILE ASYNC' + err);;
+		if (err) console.error('ERROR WRITING TO STATSFILE ASYNC' + err);;
 	});	
 }
 //==============================================================
@@ -159,6 +159,7 @@ Statistics.resetChannelStats = () => {
 //This function will be executed every 1. day of the month based on the time zone, this bot is running
 schedule.scheduleJob('0 0 1 * *', () => {
 	Statistics.resetChannelStats();
+	console.log('STATS INFO: Monthly counter reset triggered.')
   });
 
 module.exports = Statistics;
