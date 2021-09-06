@@ -1,4 +1,3 @@
-const config = require('./config');
 const https = require('https');
 
 //this module holds functions for the deepl API
@@ -10,23 +9,27 @@ var Translator = {};
 //set twitch chat client
 Translator.setClient = (client) => {
 	Translator.client = client;
+	console.log("TRANSLATOR INFO: Twitch client set.");
 }
 
-//set api client for deepl
-Translator.setAPIKey = (apikey) => {
-	Translator.APIKEY = apikey;
+//sets API key and URL from config
+Translator.setAPIConfig = (config) => {
+	Translator.APIKEY = config.apikey;
+	Translator.URL = config.serviceUrl;
+	console.log("TRANSLATOR INFO: Deepl config set.");
 }
 
-//counter suff for stats
-Translator.incJPCounter = () =>{
-	Translator.jpcounter++;
+//sets the user who will be displayed on error
+Translator.setBotowner = (botowner) => {
+	Translator.botowner = botowner;
+	console.log("TRANSLATOR INFO: Botowner set.");
 }
 
-Translator.incENCounter = () =>{
-	Translator.encounter++;
+//register Autotranslator API (IBM)
+Translator.registerAutoTranslator = (autotranslator) => {
+	Translator.autotranslator = autotranslator;
+	console.log("TRANSLATOR INFO: Registered IBM Service for auto-translate.")
 }
-
-const DEEPL_API_URL = "https://api-free.deepl.com/v2/";
 
 //function that translates given text and sends it to twitch chat
 //target = Twitch channel to send the message
@@ -36,7 +39,7 @@ const DEEPL_API_URL = "https://api-free.deepl.com/v2/";
 Translator.translateToChat = (target, recipient, inputtext, lang) => {
 
 	//building request url
-	const url = DEEPL_API_URL + `translate?auth_key=${Translator.APIKEY}&text=${inputtext}&target_lang=${lang}`;
+	const url = Translator.URL + `translate?auth_key=${Translator.APIKEY}&text=${inputtext}&target_lang=${lang}`;
 
 	Translator.sendAPIRequest(url, translated => {
 		if(translated.getstatusCode() === 200)
@@ -50,7 +53,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 		{
 			let errmsg = `Translate request Failed. Error Code: ${statusCode}`;
 			//send error message to chat
-			Translator.client.say(target, `${errmsg} Please send this message to @${config.botowner}.`);
+			Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);
 			console.error(errmsg);
 		}
 	});
@@ -59,7 +62,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 //function to send the usage of the API to chat. 
 //target = twitch channel target 
 Translator.sendAPIUsageToChat = (target) => {
-	const url = DEEPL_API_URL + `usage?auth_key=${Translator.APIKEY}`;
+	const url = Translator.URL + `usage?auth_key=${Translator.APIKEY}`;
 	Translator.sendAPIRequest(url, usage => {
 		if(usage.getstatusCode() === 200)
 		{
@@ -105,9 +108,36 @@ Translator.sendAPIRequest = (url, callback) =>
 			callback(new Translator.apiData(answer,statusCode));			
 		});
 	}).on('error', err => {
-		console.err('Error: ', err.message);
+		console.error('Error: ', err.message);
 	});
 	req.end();
+}
+
+//function that translates given text and sends it to twitch chat
+//target = Twitch channel to send the message
+//recipient = if someone taged a person before the command
+//inputtext = text to be translated
+//lang = target language
+Translator.autotranslate = (target, recipient, inputtext, lang) => 
+{
+	const source = {
+		text: inputtext,
+		target: lang,
+	}
+	Translator.autotranslator.translate(source).then(res => {
+		let chatmessage = res.result.translations[0].translation;
+		if(recipient)			
+			chatmessage = recipient + " " + chatmessage;
+		Translator.client.say(target,chatmessage);
+	}).catch(err =>{
+		if(!err.code === 404) //ignore 404 because 404 = Unable to automatically detect the source language.
+		{
+			console.error(err);
+			let errmsg = `Translate request Failed. Error Code: ${err.code}`;
+			//send error message to chat
+			Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);
+		}	
+	});
 }
 
 Translator.apiData = function(apidata,statusCode){
