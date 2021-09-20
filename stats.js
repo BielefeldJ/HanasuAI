@@ -33,7 +33,7 @@ Statistics.writeStatsToFileAsync = () =>
 {
 	let data = JSON.stringify(Statistics.statsdata, null, 2);
 	fs.writeFile(config.StatisticsFile, data, (err) => {
-		if (err) console.error('ERROR WRITING TO STATSFILE ASYNC' + err);;
+		if (err) console.error('ERROR WRITING TO STATSFILE ASYNC' + err);
 	});	
 }
 //==============================================================
@@ -158,7 +158,13 @@ Statistics.resetChannelStats = () => {
 
 //This function will be executed every 1. day of the month based on the time zone, this bot is running
 schedule.scheduleJob('0 0 1 * *', () => {
+	var date = new Date();
+	date.setDate(date.getDate() - 1); 
+	date = date.toISOString().split('T')[0].split('-');
+	var newname = './stats/' + date[0] + '-' + date[1] + '-' + config.StatisticsFile;
+	fs.renameSync(config.StatisticsFile,newname);
 	Statistics.resetChannelStats();
+	Statistics.writeStatsToFileSync();
 	console.log('STATS INFO: Monthly counter reset triggered.')
   });
 
