@@ -216,7 +216,7 @@ function onMessageHandler (target, user, msg, self) {
 			infoMsg = inputtext + " " + infoMsg;
 
 		client.say(target, infoMsg);
-		return;-
+		return;
 	}
 	else if(commandName === 'stats')
 	{		
