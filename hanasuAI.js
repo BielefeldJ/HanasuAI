@@ -58,11 +58,33 @@ function onMessageHandler (target, user, msg, self) {
 		recipient = msg.substr(0, msg.indexOf(" "));
         msg = msg.substr(msg.indexOf(" ") + 1);
     }
+
+	//remove emotes from message, because they can mess up the translation. (Thanks to stefanjudis for this idea/example code on how to handle emotes)
+	//This also prevents the bot from trying to translate messages, that are filled with emotes only.
+	//"user" includes all meta informations about the user, that sends the message. It also includes informations about the used emotes! Example emote [id, positions]: "425618": ["0-2"]
+	if(user.emotes) 
+	{
+		//array to save all emotes that needs to be deleted later.
+		let emotesToDelete=[];
+		//iterate of emotes to find all positions 
+		Object.entries(user.emotes).forEach(([id, positions]) => {
+			const position = positions[0]; //We only need the first position for every emote, as we can relpace all emotes of this kind
+			const [start, end] = position.split("-");
+			emotesToDelete.push(msg.substring(parseInt(start,10),parseInt(end,10)+1));
+		});
+
+		//replace all emotes with an empty string
+		emotesToDelete.forEach(emote => {			
+			//NodeJS doesn't know replaceAll. So we need to use Regex. 
+			msg = msg.replace(new RegExp(emote, 'g'),'');
+		});
+	}
+
 	//If no command Prefix: handle autotranslation if enabled.
 	if (msg.substr(0, 1) !== commandPrefix) 
 	{
 		if(autotranslate && !config.AutoTranslateIgnoredUser.includes(user.username))
-		{			
+		{		
 			if(jpcharacters.test(msg))
 			{
 				Translator.autotranslate(target,recipient,msg,'en');
