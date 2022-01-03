@@ -26,6 +26,9 @@ const ibmconfig = {
 
 //List of users whose messages are ignored if automatic translation is enabled.
 const AutoTranslateIgnoredUser = ['streamelements','streamlabs','nightbot'];
+//List of channels, where the autotranslate function should be enabled by default
+//NOTE: channel names have to have a '#' infront of them!
+const AutoTranslateChannel = ['#channel']
 
 //Logging settings
 LOGGING.enable = true; //true = logging to file; false = logging to console
@@ -44,4 +47,4 @@ const botowner = "TWITCHUSERNAME";
 //File name where the bot logs the statistics
 const StatisticsFile = "stats.json";
 
-module.exports = {tmiconf,ibmconfig,deeplconfig,botowner,LOGGING,StatisticsFile,AutoTranslateIgnoredUser};
+module.exports = {tmiconf,ibmconfig,deeplconfig,botowner,LOGGING,StatisticsFile,AutoTranslateIgnoredUser,AutoTranslateChannel};
