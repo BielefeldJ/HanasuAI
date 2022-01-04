@@ -77,8 +77,9 @@ function onMessageHandler (target, user, msg, self) {
 
 		//replace all emotes with an empty string
 		emotesToDelete.forEach(emote => {			
-			//NodeJS doesn't know replaceAll. So we need to use Regex. 
-			msg = msg.replace(new RegExp(emote, 'g'),'');
+			//NodeJS doesn't know replaceAll. So we need to use Regex. 	
+			//escape special character as some of them are used in emotes like ":)" or ":("	
+			msg = msg.replace(new RegExp(emote.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'),'');
 		});
 	}
 
