@@ -22,7 +22,7 @@ Statistics.writeStatsToFileSync = () =>
 {
 	let data = JSON.stringify(Statistics.statsdata, null, 2);
 	try{
-		fs.writeFileSync(config.StatisticsFile, data)
+		fs.writeFileSync('./stats/' + config.StatisticsFile, data)
 	}
 	catch(err)
 	{
@@ -32,7 +32,7 @@ Statistics.writeStatsToFileSync = () =>
 Statistics.writeStatsToFileAsync = () =>
 {
 	let data = JSON.stringify(Statistics.statsdata, null, 2);
-	fs.writeFile(config.StatisticsFile, data, (err) => {
+	fs.writeFile('./stats/' + config.StatisticsFile, data, (err) => {
 		if (err) console.error('ERROR WRITING TO STATSFILE ASYNC' + err);
 	});	
 }
@@ -45,7 +45,7 @@ function initStats()
 {
 	try
 	{
-		let data = fs.readFileSync(config.StatisticsFile); //read stats file
+		let data = fs.readFileSync('./stats/' + config.StatisticsFile); //read stats file
 		Statistics.statsdata = JSON.parse(data);
 		//check if there are stats for a channel, thats not in the config anymore, remove object, if not in config
 		Statistics.statsdata.perChannel.forEach(channelstats => {			
@@ -162,7 +162,7 @@ schedule.scheduleJob('0 0 1 * *', () => {
 	date.setDate(date.getDate() - 1); 
 	date = date.toISOString().split('T')[0].split('-');
 	var newname = './stats/' + date[0] + '-' + date[1] + '-' + config.StatisticsFile;
-	fs.renameSync(config.StatisticsFile,newname);
+	fs.renameSync('./stats/' + config.StatisticsFile,newname);
 	Statistics.resetChannelStats();
 	Statistics.writeStatsToFileSync();
 	console.log('STATS INFO: Monthly counter reset triggered.')
