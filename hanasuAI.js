@@ -175,14 +175,30 @@ function onMessageHandler (target, user, msg, self) {
 	// User commands
 	if (commandName === 'jp' && hasParameter) 
 	{
-		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
-		Stats.incrementCounter(target.substring(1),'JA');
+		try 
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
+			Stats.incrementCounter(target.substring(1),'JA');			
+		} catch (error) 
+		{
+			logger.error('Error translating this message to Japanese: ' + inputtext);
+			logger.error(error);
+		}
+
 		return;
 	}
 	else if(commandName === 'en' && hasParameter)
 	{		
-		Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
-		Stats.incrementCounter(target.substring(1),'EN-US');
+		try 
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
+			Stats.incrementCounter(target.substring(1),'EN-US');			
+		} catch (error) 
+		{
+			logger.error('Error translating this message to English: ' + inputtext);
+			logger.error(error);			
+		}
+
 		return;
 	}
 	else if(commandName === 'infoen')
