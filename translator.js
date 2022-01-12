@@ -1,4 +1,5 @@
 const https = require('https');
+const {logger} = require('./logger.js');
 
 //this module holds functions for the deepl API
 //The module uses the client to send the answers from the API directly to the chat
@@ -9,26 +10,26 @@ var Translator = {};
 //set twitch chat client
 Translator.setClient = (client) => {
 	Translator.client = client;
-	console.log("TRANSLATOR INFO: Twitch client set.");
+	logger.log("TRANSLATOR INFO: Twitch client set.");
 }
 
 //sets API key and URL from config
 Translator.setAPIConfig = (config) => {
 	Translator.APIKEY = config.apikey;
 	Translator.URL = config.serviceUrl;
-	console.log("TRANSLATOR INFO: Deepl config set.");
+	logger.log("TRANSLATOR INFO: Deepl config set.");
 }
 
 //sets the user who will be displayed on error
 Translator.setBotowner = (botowner) => {
 	Translator.botowner = botowner;
-	console.log("TRANSLATOR INFO: Botowner set.");
+	logger.log("TRANSLATOR INFO: Botowner set.");
 }
 
 //register Autotranslator API (IBM)
 Translator.registerAutoTranslator = (autotranslator) => {
 	Translator.autotranslator = autotranslator;
-	console.log("TRANSLATOR INFO: Registered IBM Service for auto-translate.")
+	logger.log("TRANSLATOR INFO: Registered IBM Service for auto-translate.")
 }
 
 //function that translates given text and sends it to twitch chat
@@ -54,7 +55,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 			let errmsg = `Translate request Failed. Error Code: ${statusCode}`;
 			//send error message to chat
 			Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);
-			console.error(errmsg);
+			logger.error(errmsg);
 		}
 	});
 }
@@ -74,7 +75,7 @@ Translator.sendAPIUsageToChat = (target) => {
 			let errmsg = `Usage request Failed. Error Code: ${statusCode}`;
 			//send error message to chat
 			Translator.client.say(target, `${errmsg}`);
-			console.error(errmsg);
+			logger.error(errmsg);
 		}			
 	});
 }
@@ -108,7 +109,7 @@ Translator.sendAPIRequest = (url, callback) =>
 			callback(new Translator.apiData(answer,statusCode));			
 		});
 	}).on('error', err => {
-		console.error('Error: ', err.message);
+		logger.error('Error: ', err.message);
 	});
 	req.end();
 }
@@ -132,7 +133,7 @@ Translator.autotranslate = (target, recipient, inputtext, lang) =>
 	}).catch(err =>{
 		if(!err.code === 404) //ignore 404 because 404 = Unable to automatically detect the source language.
 		{
-			console.error(err);
+			logger.error(err);
 			let errmsg = `Translate request Failed. Error Code: ${err.code}`;
 			//send error message to chat
 			Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);

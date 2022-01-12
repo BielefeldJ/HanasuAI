@@ -1,6 +1,7 @@
 const config = require('./config');
 const fs = require('fs');
 const schedule = require('node-schedule');
+const {logger} = require('./logger.js');
 
 //Module to save stats per channel and global
 var Statistics = {};
@@ -16,6 +17,7 @@ Statistics.addChannelToStatsData = (channel) => {
 	Statistics.statsdata.perChannel.push(statsobject);
 };
 
+
 //==============================================================
 //write stats to file
 Statistics.writeStatsToFileSync = () =>
@@ -26,14 +28,14 @@ Statistics.writeStatsToFileSync = () =>
 	}
 	catch(err)
 	{
-		console.error('ERROR WRITING TO STATSFILE SYNC' + err);
+		logger.error('ERROR WRITING TO STATSFILE SYNC' + err);
 	}
 }
 Statistics.writeStatsToFileAsync = () =>
 {
 	let data = JSON.stringify(Statistics.statsdata, null, 2);
 	fs.writeFile('./stats/' + config.StatisticsFile, data, (err) => {
-		if (err) console.error('ERROR WRITING TO STATSFILE ASYNC' + err);
+		if (err) logger.error('ERROR WRITING TO STATSFILE ASYNC' + err);
 	});	
 }
 //==============================================================
@@ -51,7 +53,7 @@ function initStats()
 		Statistics.statsdata.perChannel.forEach(channelstats => {			
 			if (!config.tmiconf.channels.includes(channelstats.channel)) 
 			{
-				console.log('INFO STATS INIT: Removing Channel' + channelstats.channel + ' becaust its is not in config anymore.')
+				logger.log('INFO STATS INIT: Removing Channel' + channelstats.channel + ' becaust its is not in config anymore.')
 				let index = Statistics.statsdata.perChannel.indexOf(channelstats);
 				if (index > -1)
 					Statistics.statsdata.perChannel.splice(index, 1);
@@ -65,13 +67,13 @@ function initStats()
 		config.tmiconf.channels.forEach(channel => {
 			if(!Statistics.statsdata.channellist.includes(channel))
 			{	
-				console.log('INFO STATS INIT: Adding ' + channel + ' becaust it does not have stats yet.');
+				logger.log('INFO STATS INIT: Adding ' + channel + ' becaust it does not have stats yet.');
 				Statistics.addChannelToStatsData(channel);
 			}
 		});
 		//write new Statsobject to file;
 		Statistics.writeStatsToFileSync();
-		console.log('INFO STATS INIT: Load complete.')
+		logger.log('INFO STATS INIT: Load complete.')
 		return;
 	}
 	catch(err)
@@ -79,7 +81,7 @@ function initStats()
 		//if no file found, init statsdata and add channels from config.
 		if(err.code === 'ENOENT')
 		{
-			console.log('INFO STATS INIT: No stats file found. Creating one.')
+			logger.log('INFO STATS INIT: No stats file found. Creating one.')
 			//create empty StatsData object
 			Statistics.statsdata = {
 				channellist : [],
@@ -99,11 +101,11 @@ function initStats()
 			});
 			//write to file.
 			Statistics.writeStatsToFileSync();
-			console.log('INFO STATS INIT: Load complete.')
+			logger.log('INFO STATS INIT: Load complete.')
 			return;
 		}
 		else
-			console.error('ERROR INIT STATS MODULE: ' + err)
+			logger.error('ERROR INIT STATS MODULE: ' + err)
 	}
 }
 
@@ -165,7 +167,7 @@ schedule.scheduleJob('0 0 1 * *', () => {
 	fs.renameSync('./stats/' + config.StatisticsFile,newname);
 	Statistics.resetChannelStats();
 	Statistics.writeStatsToFileSync();
-	console.log('STATS INFO: Monthly counter reset triggered.')
+	logger.log('STATS INFO: Monthly counter reset triggered.')
   });
 
 module.exports = Statistics;

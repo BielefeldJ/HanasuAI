@@ -1,25 +1,15 @@
-const tmi = require('tmi.js');
-const fs = require('fs');
-const proc = require('process');
+//import config
 const config = require('./config.js');
+//HanasuAI can start now
+console.log(LOGGING.enable ? "HanasuAI is starting. Logging to file now" : "HanasuAI is starting.");
+//imports
+const {logger} = require('./logger.js');
+const tmi = require('tmi.js');
+const proc = require('process');
 const Translator = require('./translator.js');
 const Stats = require('./stats.js');
 const IBMTranslatorV3 = require('ibm-watson/language-translator/v3');
 const { IamAuthenticator } = require('ibm-watson/auth');
-
-if(LOGGING.enable)
-{
-	//use logfiles
-	var access = fs.createWriteStream(LOGGING.logfile);
-	var error = fs.createWriteStream(LOGGING.errlogfile);
-
-	// redirect stdout / stderr
-	proc.stdout.write = access.write.bind(access);
-	proc.stderr.write = error.write.bind(error); 
-}
-
-// Valid commands start with !
-const commandPrefix = '!';
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
@@ -40,8 +30,10 @@ Translator.setBotowner(config.botowner);
 Translator.registerAutoTranslator(new IBMTranslatorV3(config.ibmconfig));
 //Set default channel for autotranslation
 var autotranslatechannel = [...config.AutoTranslateChannel];
-console.log(`INFO: Auto translation enabled for the following channels: ${autotranslatechannel}`);
+logger.log(`INFO: Auto translation enabled for the following channels: ${autotranslatechannel}`);
 
+// Valid commands start with !
+const commandPrefix = '!';
 //all JP characters (Hiragana,Katakana, Common, uncommon and rare kanji )
 const jpcharacters = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
 
@@ -148,7 +140,7 @@ function onMessageHandler (target, user, msg, self) {
 				{
 					autotranslatechannel = autotranslatechannel.filter(t => t !== target);				
 					client.say(target,"Disabled auto-translation! | オートトランスレーションの無効化");
-					console.log("AUTOMODE INFO: Disabled auto-translation for " + target);
+					logger.log("AUTOMODE INFO: Disabled auto-translation for " + target);
 				}
 				else
 					client.say(target,"Auto-translation is already disabled. | 自動翻訳がすでに無効になっている");
@@ -160,7 +152,7 @@ function onMessageHandler (target, user, msg, self) {
 				{
 					autotranslatechannel.push(target);
 					client.say(target,"Enabled auto-translation! | オートトランスレーションを有効にしました");
-					console.log("AUTOMODE INFO: Enabled auto-translation for " + target);
+					logger.log("AUTOMODE INFO: Enabled auto-translation for " + target);
 				}
 				else
 					client.say(target,"Auto-translation is already enabled. | 自動翻訳がすでに起動している");
@@ -269,7 +261,7 @@ String.prototype.toHHMMSS = function () {
 
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {	
-	console.log(`* Connected to ${addr}:${port}`);
+	logger.log(`* Connected to ${addr}:${port}`);
 }
 
 //cach Exception and write them to the logfile
