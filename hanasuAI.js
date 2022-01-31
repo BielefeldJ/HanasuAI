@@ -10,6 +10,7 @@ const Translator = require('./translator.js');
 const Stats = require('./stats.js');
 const IBMTranslatorV3 = require('ibm-watson/language-translator/v3');
 const { IamAuthenticator } = require('ibm-watson/auth');
+const HealthcheckClient = require('ipc-healthcheck/healthcheck-client');
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
@@ -20,6 +21,12 @@ client.on('connected', onConnectedHandler);
 
 // Connect to Twitch:
 client.connect();
+
+//create a healthcheck client
+const healthcheck = new HealthcheckClient('twitchbots','HanasuAI',true);
+
+//start listening for healthcheck 
+healthcheck.startListening();
 
 //Create the Translator for deepl
 Translator.setClient(client);
@@ -121,7 +128,8 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		if(commandName === 'shutdown') //shutdown the bot
 		{
-			client.say(target,"Byebye o/");			
+			client.say(target,"Byebye o/");
+			healthcheck.detach();			
 			proc.exit();			
 		}
 		else if(commandName === 'api') //sends the API usage of the month in chat
@@ -182,6 +190,7 @@ function onMessageHandler (target, user, msg, self) {
 		} catch (error) 
 		{
 			logger.error('Error translating this message to Japanese: ' + inputtext);
+			healthcheck.notifyAboutError(error.stack);
 			logger.error(error);
 		}
 
@@ -196,6 +205,7 @@ function onMessageHandler (target, user, msg, self) {
 		} catch (error) 
 		{
 			logger.error('Error translating this message to English: ' + inputtext);
+			healthcheck.notifyAboutError(error.stack);
 			logger.error(error);			
 		}
 
@@ -284,4 +294,5 @@ function onConnectedHandler (addr, port) {
 proc.on('uncaughtException', function(err) {
 	console.error('uncaughtException!!');
 	console.error((err && err.stack) ? err.stack : err);
+	healthcheck.notifyAboutError((err && err.stack) ? err.stack : err);
   });
