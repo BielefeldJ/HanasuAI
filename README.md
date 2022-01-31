@@ -46,6 +46,7 @@ List of requirements
 * [DeeplAPI](https://www.deepl.com/pro?cta=header-prices/)
 * [WatsonAPI](https://github.com/watson-developer-cloud/node-sdk)
 * [node-schedule](https://github.com/node-schedule/node-schedule)
+* [ipc-healthcheck](https://github.com/BielefeldJ/ipc-healthcheck)
 * fs
 * https
 * process
