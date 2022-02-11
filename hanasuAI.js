@@ -190,7 +190,7 @@ function onMessageHandler (target, user, msg, self) {
 		} catch (error) 
 		{
 			logger.error('Error translating this message to Japanese: ' + inputtext);
-			healthcheck.notifyAboutError(error.stack);
+			healthcheck.notify(error.stack);
 			logger.error(error);
 		}
 
@@ -205,7 +205,7 @@ function onMessageHandler (target, user, msg, self) {
 		} catch (error) 
 		{
 			logger.error('Error translating this message to English: ' + inputtext);
-			healthcheck.notifyAboutError(error.stack);
+			healthcheck.notify(error.stack);
 			logger.error(error);			
 		}
 
@@ -294,5 +294,5 @@ function onConnectedHandler (addr, port) {
 proc.on('uncaughtException', function(err) {
 	console.error('uncaughtException!!');
 	console.error((err && err.stack) ? err.stack : err);
-	healthcheck.notifyAboutError((err && err.stack) ? err.stack : err);
+	healthcheck.notify((err && err.stack) ? err.stack : err);
   });

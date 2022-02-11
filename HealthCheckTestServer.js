@@ -3,11 +3,11 @@
 //you can find the example on how to use the server at https://github.com/BielefeldJ/ipc-healthcheck/blob/main/example-server.js 
 
 const HealthcheckServer = require('ipc-healthcheck/healthcheck-server');
-const healthcheckserver = new HealthcheckServer('twitchbots',100,1000 ,true);
+const healthcheckserver = new HealthcheckServer('twitchbots',100,1000 ,false);
 healthcheckserver.on('serviceCrashed', (name) => {
 	console.log('Service crashed: ' + name);
 });
-healthcheckserver.on('serviceError', (errmeg,service) => {
+healthcheckserver.on('serviceNotify', (errmeg,service) => {
 	console.log(`Service ${service.name} with id ${service.id} send the following error: ${errmeg}`);
 });
 
