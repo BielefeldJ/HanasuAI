@@ -1,10 +1,8 @@
 {
   "dependencies": {
-    "console-stamp": "^3.0.3",
-    "ibm-watson": "^6.1.2",
-    "ipc-healthcheck": "github:BielefeldJ/ipc-healthcheck",
-    "node-ipc": "^10.1.0",
-    "node-schedule": "^2.0.0",
+    "console-stamp": "^3.0.6",
+    "ibm-watson": "^7.0.0",
+    "node-schedule": "^2.1.0",
     "tmi.js": "^1.8.5"
   },
   "name": "hanasuai",
