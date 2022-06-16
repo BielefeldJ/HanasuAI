@@ -31,7 +31,7 @@ const AutoTranslateIgnoredUser = ['streamelements','streamlabs','nightbot'];
 const AutoTranslateChannel = ['#channel']
 
 //Logging settings
-LOGGING.enable = true; //true = logging to file; false = logging to console
+LOGGING.toFile = true; //true = logging to file; false = logging to console
 LOGGING.logfile = "HanasuAI.log";  //file name for the logfile
 LOGGING.errlogfile = "err.log"; // file name for the err log file
 
