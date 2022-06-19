@@ -1,16 +1,16 @@
+const {logger} = require('./logger.js');
+//HanasuAI can start now
+console.log("HanasuAI is starting..");
+
+//imports
 //import config
 const config = require('./config.js');
-//HanasuAI can start now
-console.log(LOGGING.toFile ? "HanasuAI is starting. Logging to file now" : "HanasuAI is starting.");
-//imports
-const {logger} = require('./logger.js');
 const tmi = require('tmi.js');
 const proc = require('process');
 const Translator = require('./translator.js');
 const Stats = require('./stats.js');
 const IBMTranslatorV3 = require('ibm-watson/language-translator/v3');
 const { IamAuthenticator } = require('ibm-watson/auth');
-
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
