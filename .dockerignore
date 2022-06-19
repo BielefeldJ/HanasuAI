@@ -1,0 +1,9 @@
+node_modules
+stats
+config.js
+err.log
+error.log
+example_config.js 
+HanasuAI.log
+test.js
+README.md

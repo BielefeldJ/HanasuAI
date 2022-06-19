@@ -30,11 +30,6 @@ const AutoTranslateIgnoredUser = ['streamelements','streamlabs','nightbot'];
 //NOTE: channel names have to have a '#' infront of them!
 const AutoTranslateChannel = ['#channel']
 
-//Logging settings
-LOGGING.enable = true; //true = logging to file; false = logging to console
-LOGGING.logfile = "HanasuAI.log";  //file name for the logfile
-LOGGING.errlogfile = "err.log"; // file name for the err log file
-
 //Config for deepl
 const deeplconfig = {
 	apikey: 'APIKEY', // Key for the deepl API
@@ -47,4 +42,4 @@ const botowner = "TWITCHUSERNAME";
 //File name where the bot logs the statistics
 const StatisticsFile = "stats.json";
 
-module.exports = {tmiconf,ibmconfig,deeplconfig,botowner,LOGGING,StatisticsFile,AutoTranslateIgnoredUser,AutoTranslateChannel};
+module.exports = {tmiconf,ibmconfig,deeplconfig,botowner,StatisticsFile,AutoTranslateIgnoredUser,AutoTranslateChannel};
