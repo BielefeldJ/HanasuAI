@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  hanasuai:
+    image: bielefeldj/hanasuai:latest
+    container_name: HanasuAI
+    volumes:
+      - ./stats:/hanasuAI/stats
+      - ./config.js:/hanasuAI/config.js
