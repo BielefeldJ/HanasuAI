@@ -5,7 +5,7 @@ LABEL description="HanasuAI Docker"
 
 WORKDIR /hanasuAI
 
-# Copy pre build bufferutil to node_modules.
+# Copy pre build bufferutil to node_modules (needed by ibm-watson).
 # This is needed for the arm/64 container.
 # For some reason, npm install fails at this package on arm/64.
 # If you don't wanna use the precompiled module
