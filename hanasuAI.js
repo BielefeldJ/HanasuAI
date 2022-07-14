@@ -62,18 +62,21 @@ function onMessageHandler (target, user, msg, self) {
 		//array to save all emotes that needs to be deleted later.
 		let emotesToDelete=[];
 		//iterate of emotes to find all positions 
-		Object.entries(user.emotes).forEach(([id, positions]) => {
+		//using sequential loop to get all emotes.
+		for(positions of Object.values(user.emotes))
+		{
 			const position = positions[0]; //We only need the first position for every emote, as we can relpace all emotes of this kind
 			const [start, end] = position.split("-");
-			emotesToDelete.push(msg.substring(parseInt(start,10),parseInt(end,10)+1));
-		});
+			emotesToDelete.push(msg.substring(parseInt(start,10),parseInt(end,10)+1));		
+		}
 
 		//replace all emotes with an empty string
-		emotesToDelete.forEach(emote => {			
+		//using sequential loop to get all emotes. 
+		for(emote of emotesToDelete){			
 			//NodeJS doesn't know replaceAll. So we need to use Regex. 	
 			//escape special character as some of them are used in emotes like ":)" or ":("	
 			msg = msg.replace(new RegExp(emote.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'),'');
-		});
+		};
 	}
 
 	//If no command Prefix: handle autotranslation if enabled.
