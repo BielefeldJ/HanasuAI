@@ -136,7 +136,7 @@ function onMessageHandler (target, user, msg, self) {
 		else if(commandName === 'broadcast' && hasParameter) //sends a message to all channels
 		{
 			for(channel of config.tmiconf.channels)	
-				client.say(target,inputtext);
+				client.say(channel,inputtext);
 			return;
 		}
 	}
