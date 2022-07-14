@@ -133,6 +133,12 @@ function onMessageHandler (target, user, msg, self) {
 			Translator.sendAPIUsageToChat(target);
 			return;
 		}		
+		else if(commandName === 'broadcast' && hasParameter) //sends a message to all channels
+		{
+			for(channel of config.tmiconf.channels)	
+				client.say(target,inputtext);
+			return;
+		}
 	}
 	//commands streamer + botowner
 	if(isBroadcaster || isBotOwner)
@@ -253,7 +259,7 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		Stats.getStatsGlobal((month, total) => {
 			client.say(target, `I have translated ${month.toJP}x into Japanese 🇯🇵 and ${month.toEN}x into English 🇺🇸 this month. `+ 
-								` Since I started counting ${total.toJP}x into Japanese 🇯🇵 and ${total.toEN}x into English 🇺🇸 .`);
+								`Since I started counting ${total.toJP}x into Japanese 🇯🇵 and ${total.toEN}x into English 🇺🇸 .`);
 		});
 		return;
 	}
