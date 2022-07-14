@@ -210,6 +210,8 @@ function onMessageHandler (target, user, msg, self) {
 		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! ";
 		if(!autotranslate)
 			infoMsg = infoMsg + "Just type !jp for Japanese translation or !en for English translation. I will detect the your input language automatically";
+		else
+			infoMsg = infoMsg + "Currently I'm running in auto-translate mode.";
 		if(recipient)
 			infoMsg = recipient + " " + infoMsg;
 		else if(hasParameter)
@@ -222,7 +224,9 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		let infoMsg = "やあ！私の名前は HanasuAI (話すエーアイ)です。";						
 		if(!autotranslate)
-			infoMsg = infoMsg + "あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。入力された言語を自動的に検出します。";			
+			infoMsg = infoMsg + "あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。入力された言語を自動的に検出します。";		
+		else
+			infoMsg = infoMsg + "現在、自動翻訳モードで動作しています。";	
 		if(recipient)
 			infoMsg = recipient + " " + infoMsg;
 		else if(hasParameter)
