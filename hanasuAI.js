@@ -67,7 +67,9 @@ function onMessageHandler (target, user, msg, self) {
 		{
 			const position = positions[0]; //We only need the first position for every emote, as we can relpace all emotes of this kind
 			const [start, end] = position.split("-");
-			emotesToDelete.push(msg.substring(parseInt(start,10),parseInt(end,10)+1));		
+			//using match(/./gu) to get unicode emojis as one character. Twitch sees these at 1 character. JS String not.
+			//with this, I put all characters in an array, so the start and end positions are correct again.
+			emotesToDelete.push(msg.match(/./gu).slice(parseInt(start),parseInt(end)+1).join(''));		
 		}
 
 		//replace all emotes with an empty string
