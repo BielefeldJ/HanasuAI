@@ -34,7 +34,8 @@ var autotranslatechannel = [...config.AutoTranslateChannel];
 logger.log(`INFO: Auto translation enabled for the following channels: ${autotranslatechannel}`);
 
 // Valid commands start with !
-const commandPrefix = '!';
+const commandPrefix = '!'; //！
+const jpcommandPrefix = '！';
 //all JP characters (Hiragana,Katakana, Common, uncommon and rare kanji )
 const jpcharacters = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
 
@@ -82,7 +83,7 @@ function onMessageHandler (target, user, msg, self) {
 	}
 
 	//If no command Prefix: handle autotranslation if enabled.
-	if (msg.substr(0, 1) !== commandPrefix) 
+	if (msg.substr(0, 1) !== commandPrefix || msg.substr(0,1) !== jpcommandPrefix)  
 	{
 		if(autotranslate && !config.AutoTranslateIgnoredUser.includes(user.username))
 		{		
@@ -199,7 +200,7 @@ function onMessageHandler (target, user, msg, self) {
 
 		return;
 	}
-	else if(commandName === 'en' && hasParameter)
+	else if((commandName === 'en' || commandName === '円') && hasParameter)
 	{		
 		try 
 		{
