@@ -83,7 +83,7 @@ function onMessageHandler (target, user, msg, self) {
 	}
 
 	//If no command Prefix: handle autotranslation if enabled.
-	if (msg.substr(0, 1) !== commandPrefix || msg.substr(0,1) !== jpcommandPrefix)  
+	if (msg.substr(0, 1) !== commandPrefix && msg.substr(0,1) !== jpcommandPrefix)  
 	{
 		if(autotranslate && !config.AutoTranslateIgnoredUser.includes(user.username))
 		{		
@@ -100,7 +100,7 @@ function onMessageHandler (target, user, msg, self) {
 		}
 		return;
 	}
-	
+
 	let commandName, inputtext, hasParameter
 	//used to check if the user send parameter
 	if(msg.indexOf(" ")<0)
