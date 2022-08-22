@@ -114,6 +114,12 @@ function onMessageHandler (target, user, msg, self) {
 		commandName = msg.substr(0, msg.indexOf(" ")).slice(1).toLowerCase();
 		//The message that should be translated and remove the first space 
 		inputtext = msg.substr(msg.indexOf(" ")).slice(1);
+		//prevent command injection!
+		if(inputtext.substr(0,1) === '!' || inputtext.substr(0,1) === '/')
+		{
+			logger.log(`INFO: Command injection found! ${user.username} tryed to use ${inputtext}!`);
+			return;
+		}
 		hasParameter = true;
 	}
 	//Used to check if a user is a mod or not
