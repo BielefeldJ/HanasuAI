@@ -1,5 +1,5 @@
 # HanasuAI Chatbot for Twitch
-HanasuAI is a bot for translating text messages using the deepl API. The bot automatically detects the language of the message and translates it into the language specified with the command. 
+[HanasuAI](https://www.twitch.tv/hanasuai/about) is a bot for translating text messages using the deepl API. The bot automatically detects the language of the message and translates it into the language specified with the command. 
 HanasuAI also has an auto-translating function using the IBM Watson translator. The bot translates every message into Japanese or English, depending on what language was used in the message.
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/BielefeldJ/HanasuAI/blob/main/LICENSE)
