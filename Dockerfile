@@ -13,7 +13,10 @@ WORKDIR /hanasuAI
 # so that npm install can compile bufferutil inside the container.
 # If you are using a non ARM CPU, you can just remove the next 2 lines. 
 RUN mkdir node_modules
-COPY ./bufferutil /hanasuAI/node_modules/bufferutil
+COPY ./prebuild_modules/bufferutil /hanasuAI/node_modules/bufferutil
+#utf-8-validate now has the same problem......
+#So gonna do the copy trick here as well.
+COPY ./prebuild_modules/utf-8-validate /hanasuAI/node_modules/utf-8-validate
 
 #install dependencies 
 COPY package*.json ./
