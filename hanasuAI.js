@@ -46,15 +46,6 @@ function onMessageHandler (target, user, msg, self) {
 	//check if autotranslation is enabled for target channel
 	const autotranslate = autotranslatechannel.includes(target);
 
-	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
-	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
-	let recipient = null;
-	if(msg.substr(0,1) === '@')
-    {
-		recipient = msg.substr(0, msg.indexOf(" "));
-        msg = msg.substr(msg.indexOf(" ") + 1);
-    }
-
 	//remove emotes from message, because they can mess up the translation. (Thanks to stefanjudis for this idea/example code on how to handle emotes)
 	//This also prevents the bot from trying to translate messages, that are filled with emotes only.
 	//"user" includes all meta informations about the user, that sends the message. It also includes informations about the used emotes! Example emote [id, positions]: "425618": ["0-2"]
@@ -81,6 +72,16 @@ function onMessageHandler (target, user, msg, self) {
 			msg = msg.replace(new RegExp(emote.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'),'');
 		};
 	}
+
+	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
+	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
+	//this has to be after the emote section. If not, the position of the emotes would be wrong, because the original message has already been edited
+	let recipient = null;
+	if(msg.substr(0,1) === '@')
+    {
+		recipient = msg.substr(0, msg.indexOf(" "));
+        msg = msg.substr(msg.indexOf(" ") + 1);
+    }
 
 	//If no command Prefix: handle autotranslation if enabled.
 	if (msg.substr(0, 1) !== commandPrefix && msg.substr(0,1) !== jpcommandPrefix)  
