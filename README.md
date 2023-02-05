@@ -38,6 +38,7 @@ Command | Description | Usage
 ----------------|--------------|-------
 `!shutdown` | Shutdown the bot | `!shutdown`
 `!api`	| Sends Deepl API usage to chat | `!api`
+`!broadcast` | Sends a message to every channel that uses HanasuAI | `!broadcast <text>`
 
 
 List of requirements
