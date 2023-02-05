@@ -10,7 +10,6 @@ const proc = require('process');
 const Translator = require('./translator.js');
 const Stats = require('./stats.js');
 
-
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
 
@@ -103,6 +102,7 @@ function onMessageHandler (target, user, msg, self) {
 		}
 		//check if the english message has at least 5 character.
 		//This way I can ignore most messages like "hehe" "xD" or something like this. No need to translate them.
+		//This also makes sure that messages only containing unicode emojis are not translated.
 		else if(/[A-Za-z ]{5,}/.test(msg))
 		{
 			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'JA');
