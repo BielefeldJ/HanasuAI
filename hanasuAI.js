@@ -90,19 +90,24 @@ function onMessageHandler (target, user, msg, self) {
 		if(!msg.replace(/\s/g, '').length)
 			return;
 
-		if(autotranslate && !config.AutoTranslateIgnoredUser.includes(user.username))
-		{		
-			if(jpcharacters.test(msg))
-			{
-				Translator.translateToChat(target,recipient,encodeURIComponent(msg),'EN-US');
-				Stats.incrementCounter(target.substring(1),'EN-US');
-			}
-			else
-			{
-				Translator.translateToChat(target,recipient,encodeURIComponent(msg),'JA');
-				Stats.incrementCounter(target.substring(1),'JA');
-			}
+		//check if autotranslate is enabled
+		if(!autotranslate)
+			return;
+		
+		//check if user is on ignorelist 
+		if(config.AutoTranslateIgnoredUser.includes(user.username))
+			return;
+				
+		if(jpcharacters.test(msg))
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'EN-US');
+			Stats.incrementCounter(target.substring(1),'EN-US');
 		}
+		else
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'JA');
+			Stats.incrementCounter(target.substring(1),'JA');
+		}		
 		return;
 	}
 
