@@ -86,6 +86,10 @@ function onMessageHandler (target, user, msg, self) {
 	//If no command Prefix: handle autotranslation if enabled.
 	if (msg.substr(0, 1) !== commandPrefix && msg.substr(0,1) !== jpcommandPrefix)  
 	{
+		//ignore empty messages.
+		if(!msg.replace(/\s/g, '').length)
+			return;
+
 		if(autotranslate && !config.AutoTranslateIgnoredUser.includes(user.username))
 		{		
 			if(jpcharacters.test(msg))
