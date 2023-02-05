@@ -9,8 +9,7 @@ const tmi = require('tmi.js');
 const proc = require('process');
 const Translator = require('./translator.js');
 const Stats = require('./stats.js');
-const IBMTranslatorV3 = require('ibm-watson/language-translator/v3');
-const { IamAuthenticator } = require('ibm-watson/auth');
+
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
@@ -27,8 +26,7 @@ Translator.setClient(client);
 Translator.setAPIConfig(config.deeplconfig);
 Translator.setBotowner(config.botowner);
 
-//Create the Translator IBM
-Translator.registerAutoTranslator(new IBMTranslatorV3(config.ibmconfig));
+
 //Set default channel for autotranslation
 var autotranslatechannel = [...config.AutoTranslateChannel];
 logger.log(`INFO: Auto translation enabled for the following channels: ${autotranslatechannel}`);
