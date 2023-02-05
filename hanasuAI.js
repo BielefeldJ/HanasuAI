@@ -9,8 +9,7 @@ const tmi = require('tmi.js');
 const proc = require('process');
 const Translator = require('./translator.js');
 const Stats = require('./stats.js');
-const IBMTranslatorV3 = require('ibm-watson/language-translator/v3');
-const { IamAuthenticator } = require('ibm-watson/auth');
+
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
@@ -27,8 +26,7 @@ Translator.setClient(client);
 Translator.setAPIConfig(config.deeplconfig);
 Translator.setBotowner(config.botowner);
 
-//Create the Translator IBM
-Translator.registerAutoTranslator(new IBMTranslatorV3(config.ibmconfig));
+
 //Set default channel for autotranslation
 var autotranslatechannel = [...config.AutoTranslateChannel];
 logger.log(`INFO: Auto translation enabled for the following channels: ${autotranslatechannel}`);
@@ -86,19 +84,28 @@ function onMessageHandler (target, user, msg, self) {
 	//If no command Prefix: handle autotranslation if enabled.
 	if (msg.substr(0, 1) !== commandPrefix && msg.substr(0,1) !== jpcommandPrefix)  
 	{
-		if(autotranslate && !config.AutoTranslateIgnoredUser.includes(user.username))
-		{		
-			if(jpcharacters.test(msg))
-			{
-				Translator.autotranslate(target,recipient,msg,'en');
-				Stats.incrementCounter(target.substring(1),'EN-US');
-			}
-			else
-			{
-				Translator.autotranslate(target,recipient,msg,'ja');
-				Stats.incrementCounter(target.substring(1),'JA');
-			}
+		//ignore empty messages.
+		if(!msg.replace(/\s/g, '').length)
+			return;
+
+		//check if autotranslate is enabled
+		if(!autotranslate)
+			return;
+		
+		//check if user is on ignorelist 
+		if(config.AutoTranslateIgnoredUser.includes(user.username))
+			return;
+				
+		if(jpcharacters.test(msg))
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'EN-US');
+			Stats.incrementCounter(target.substring(1),'EN-US');
 		}
+		else
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'JA');
+			Stats.incrementCounter(target.substring(1),'JA');
+		}		
 		return;
 	}
 

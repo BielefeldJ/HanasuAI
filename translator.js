@@ -26,12 +26,6 @@ Translator.setBotowner = (botowner) => {
 	logger.log("TRANSLATOR INFO: Botowner set.");
 }
 
-//register Autotranslator API (IBM)
-Translator.registerAutoTranslator = (autotranslator) => {
-	Translator.autotranslator = autotranslator;
-	logger.log("TRANSLATOR INFO: Registered IBM Service for auto-translate.")
-}
-
 //function that translates given text and sends it to twitch chat
 //target = Twitch channel to send the message
 //recipient = if someone taged a person before the command
@@ -112,33 +106,6 @@ Translator.sendAPIRequest = (url, callback) =>
 		logger.error('Error: ', err.message);
 	});
 	req.end();
-}
-
-//function that translates given text and sends it to twitch chat
-//target = Twitch channel to send the message
-//recipient = if someone taged a person before the command
-//inputtext = text to be translated
-//lang = target language
-Translator.autotranslate = (target, recipient, inputtext, lang) => 
-{
-	const source = {
-		text: inputtext,
-		target: lang,
-	}
-	Translator.autotranslator.translate(source).then(res => {
-		let chatmessage = res.result.translations[0].translation;
-		if(recipient)			
-			chatmessage = recipient + " " + chatmessage;
-		Translator.client.say(target,chatmessage);
-	}).catch(err =>{
-		if(!err.code === 404) //ignore 404 because 404 = Unable to automatically detect the source language.
-		{
-			logger.error(err);
-			let errmsg = `Translate request Failed. Error Code: ${err.code}`;
-			//send error message to chat
-			Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);
-		}	
-	});
 }
 
 Translator.apiData = function(apidata,statusCode){

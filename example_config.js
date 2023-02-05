@@ -11,18 +11,6 @@ const tmiconf = {
 	]
 };
 
-//Config for IBM Watson Service
-const { IamAuthenticator } = require('ibm-watson/auth');
-const ibmconfig = {
-	version: 'VERSION', //the Version of the service API
-	authenticator: new IamAuthenticator({
-	  apikey: 'APIKEY', //Key for the service API 
-	}),
-	serviceUrl: 'SERVICEURL', //URL of the API Endpoint
-	headers: {
-		'X-Watson-Learning-Opt-Out': 'true' //To prevent IBM usage of your data for an API request, set the X-Watson-Learning-Opt-Out header parameter to true.
-	}
-}
 
 //List of users whose messages are ignored if automatic translation is enabled.
 const AutoTranslateIgnoredUser = ['streamelements','streamlabs','nightbot'];
@@ -42,4 +30,4 @@ const botowner = "TWITCHUSERNAME";
 //File name where the bot logs the statistics
 const StatisticsFile = "stats.json";
 
-module.exports = {tmiconf,ibmconfig,deeplconfig,botowner,StatisticsFile,AutoTranslateIgnoredUser,AutoTranslateChannel};
+module.exports = {tmiconf,deeplconfig,botowner,StatisticsFile,AutoTranslateIgnoredUser,AutoTranslateChannel};
