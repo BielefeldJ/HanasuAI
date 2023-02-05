@@ -101,7 +101,9 @@ function onMessageHandler (target, user, msg, self) {
 			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'EN-US');
 			Stats.incrementCounter(target.substring(1),'EN-US');
 		}
-		else
+		//check if the english message has at least 5 character.
+		//This way I can ignore most messages like "hehe" "xD" or something like this. No need to translate them.
+		else if(/[A-Za-z ]{5,}/.test(msg))
 		{
 			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'JA');
 			Stats.incrementCounter(target.substring(1),'JA');
