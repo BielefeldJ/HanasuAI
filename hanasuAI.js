@@ -90,12 +90,12 @@ function onMessageHandler (target, user, msg, self) {
 		{		
 			if(jpcharacters.test(msg))
 			{
-				Translator.autotranslate(target,recipient,msg,'en');
+				Translator.translateToChat(target,recipient,encodeURIComponent(msg),'EN-US');
 				Stats.incrementCounter(target.substring(1),'EN-US');
 			}
 			else
 			{
-				Translator.autotranslate(target,recipient,msg,'ja');
+				Translator.translateToChat(target,recipient,encodeURIComponent(msg),'JA');
 				Stats.incrementCounter(target.substring(1),'JA');
 			}
 		}
