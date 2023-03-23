@@ -35,6 +35,8 @@ const commandPrefix = '!'; //！
 const jpcommandPrefix = '！';
 //all JP characters (Hiragana,Katakana, Common, uncommon and rare kanji )
 const jpcharacters = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
+//Regex for URL and E-Mail addresses
+const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)/
 
 // Called every time a message comes in. Handler for all commands
 function onMessageHandler (target, user, msg, self) {
@@ -69,6 +71,9 @@ function onMessageHandler (target, user, msg, self) {
 			msg = msg.replace(new RegExp(emote.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'),'');
 		};
 	}
+
+	//remove URL and e-mail addresses from the message. 	
+	msg = msg.replace(urlRegex,"");
 
 	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
 	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
