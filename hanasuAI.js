@@ -99,8 +99,14 @@ function onMessageHandler (target, user, msg, self) {
 		//check if user is on ignorelist 
 		if(config.AutoTranslateIgnoredUser.includes(user.username))
 			return;
-				
-		if(jpcharacters.test(msg))
+			
+		//temporarily replace all non english user.
+		//If a user was tagged in the message (user starting with @) and the name was written in Japanese Character like @こんばんは, HanasuAI thought the whole Message
+		//was japanese and tryed to translate this into english. Eventho the message was english in the first pace.
+		//It's only temp because Deepl handels Proper noun quite good. No need to remove them completly
+		//This Regex matches an @ at the beginning of a word followed by 1 to many non-word character like a-z A-Z or 0-9. The last \B ends the word.
+		let msgWithoutLocalNames = msg.replace(/\B@\W+\B/g, "")
+		if(jpcharacters.test(msgWithoutLocalNames))
 		{
 			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'EN-US');
 			Stats.incrementCounter(target.substring(1),'EN-US');
