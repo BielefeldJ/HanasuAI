@@ -258,7 +258,7 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! ";
 		if(!autotranslate)
-			infoMsg = infoMsg + "Just type !jp for Japanese translation or !en for English translation. I will detect the your input language automatically";
+			infoMsg = infoMsg + "Just type !jp for Japanese translation or !en for English translation. I will automatically detect your input language.";
 		else
 			infoMsg = infoMsg + "Currently I'm running in auto-translate mode.";
 		if(recipient)
@@ -287,7 +287,7 @@ function onMessageHandler (target, user, msg, self) {
 	else if(commandName === 'stats')
 	{		
 		Stats.getChannelStats(target.substring(1), channelstats => {
-			client.say(target, `This month I have already translated ${channelstats.toJP}x into Japanese 🇯🇵 and ${channelstats.toEN} times into English 🇺🇸 for ${target.substring(1)}.`);
+			client.say(target, `This month I translated ${channelstats.toJP}x to Japanese 🇯🇵 and ${channelstats.toEN} times to English 🇺🇸 for ${target.substring(1)}.`);
 		});
 		return;
 	}
@@ -301,8 +301,8 @@ function onMessageHandler (target, user, msg, self) {
 	else if(commandName === 'statsg')
 	{
 		Stats.getStatsGlobal((month, total) => {
-			client.say(target, `I have translated ${month.toJP}x into Japanese 🇯🇵 and ${month.toEN}x into English 🇺🇸 this month. `+ 
-								`Since I started counting ${total.toJP}x into Japanese 🇯🇵 and ${total.toEN}x into English 🇺🇸 .`);
+			client.say(target, `This month I translated ${month.toJP}x into Japanese 🇯🇵 and ${month.toEN}x into English 🇺🇸. `+ 
+								`Since I started counting, I have translated ${total.toJP}x to Japanese 🇯🇵 and ${total.toEN}x to English 🇺🇸.`);
 		});
 		return;
 	}
@@ -310,7 +310,7 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		Stats.getStatsGlobal((month, total) => {
 			client.say(target, `今月は、${month.toJP}xを日本語🇯🇵に、${month.toEN}xを英語🇺🇸に翻訳しました。 `+ 
-								`とカウントするようになってからは、${total.toJP}xを日本語🇯🇵に、${total.toEN}xを英語🇺🇸に合計しています。`);
+								`数え始めてから${total.toJP}xを日本語🇯🇵に、${total.toEN}xを英語🇺🇸に翻訳しました。`);
 		});
 		return;
 	}
