@@ -21,7 +21,8 @@ const AutoTranslateChannel = ['#channel']
 //Config for deepl
 const deeplconfig = {
 	apikey: 'APIKEY', // Key for the deepl API
-	serviceUrl: 'SERVICEURL' //URL of the deepl.com API
+	serviceUrl: 'https://api-free.deepl.com/v2/' //URL of the deepl.com API (free tier)
+	//serviceUrl: 'https://api.deepl.com/v2/'  //for deepl pro
 }
 
 //Twitch username of the Botowner
