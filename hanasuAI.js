@@ -254,6 +254,19 @@ function onMessageHandler (target, user, msg, self) {
 
 		return;
 	}
+	else if (commandName === 'fr' && hasParameter) 
+	{
+		try 
+		{
+			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'FR');		
+		} catch (error) 
+		{
+			logger.error('Error translating this message to French: ' + inputtext);
+			logger.error(error);
+		}
+
+		return;
+	}
 	else if(commandName === 'infoen')
 	{
 		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! ";
