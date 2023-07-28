@@ -105,6 +105,7 @@ dist
 
 #ignore real config file
 config.js
+channelconfig.json
 
 #ignore test script
 test.js
