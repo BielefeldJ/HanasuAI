@@ -5,6 +5,14 @@ console.log("HanasuAI is starting..");
 //imports
 //import config
 const config = require('./config.js');
+const channelconfig = config.loadChannelConfig();
+if(!channelconfig)
+{
+	logger.error("ERR: No channelconfig file detected. Creating default one. Please edit and restart the bot.");
+	proc.exit();
+}
+
+//import all other stuff
 const tmi = require('tmi.js');
 const proc = require('process');
 const Translator = require('./translator.js');
@@ -26,10 +34,6 @@ Translator.setAPIConfig(config.deeplconfig);
 Translator.setBotowner(config.botowner);
 
 
-//Set default channel for autotranslation
-var autotranslatechannel = [...config.AutoTranslateChannel];
-logger.log(`INFO: Auto translation enabled for the following channels: ${autotranslatechannel}`);
-
 // Valid commands start with !
 const commandPrefix = '!'; //！
 const jpcommandPrefix = '！';
@@ -42,8 +46,11 @@ const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+
 function onMessageHandler (target, user, msg, self) {
 	if (self) { return; } // Ignore messages from the bot
 
-	//check if autotranslation is enabled for target channel
-	const autotranslate = autotranslatechannel.includes(target);
+	
+	//target.substring because the target channel has a leading #. So we remove that.
+	const channelname = target.substring(1);
+	//check if autotranslation is enabled for target channel 
+	const autotranslate = channelconfig[channelname].autotranslate;
 
 	//remove emotes from message, because they can mess up the translation. (Thanks to stefanjudis for this idea/example code on how to handle emotes)
 	//This also prevents the bot from trying to translate messages, that are filled with emotes only.
@@ -99,6 +106,9 @@ function onMessageHandler (target, user, msg, self) {
 		//check if user is on ignorelist 
 		if(config.AutoTranslateIgnoredUser.includes(user.username))
 			return;
+
+		if(channelconfig[channelname].ignoreduser.includes(user.username))
+			return;
 			
 		//temporarily replace all non english user.
 		//If a user was tagged in the message (user starting with @) and the name was written in Japanese Character like @こんばんは, HanasuAI thought the whole Message
@@ -148,7 +158,7 @@ function onMessageHandler (target, user, msg, self) {
 	let isBroadcaster = target.slice(1) === user.username; //check if user broadcaster by comparing current channel with the username of the sender
 	let isModUp = isMod || isBroadcaster;
 
-	let isBotOwner = user.username === config.botowner; //twitch username of the botowner	
+	let isBotOwner = user.username === config.Botowner; //twitch username of the botowner	
 
 	//commands only the Botowner can execute
 	if(isBotOwner)
@@ -178,7 +188,7 @@ function onMessageHandler (target, user, msg, self) {
 			if(inputtext === 'off')
 			{ 	if(autotranslate)
 				{
-					autotranslatechannel = autotranslatechannel.filter(t => t !== target);				
+					channelconfig[channelname].autotranslate = false;				
 					client.say(target,"Disabled auto-translation! | オートトランスレーションの無効化");
 					logger.log("AUTOMODE INFO: Disabled auto-translation for " + target);
 				}
@@ -190,7 +200,7 @@ function onMessageHandler (target, user, msg, self) {
 			{
 				if(!autotranslate) //to avoid double activation
 				{
-					autotranslatechannel.push(target);
+					channelconfig[channelname].autotranslate = true;
 					client.say(target,"Enabled auto-translation! | オートトランスレーションを有効にしました");
 					logger.log("AUTOMODE INFO: Enabled auto-translation for " + target);
 				}
