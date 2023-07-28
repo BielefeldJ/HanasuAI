@@ -54,7 +54,7 @@ function onMessageHandler (target, user, msg, self) {
 		let emotesToDelete=[];
 		//iterate of emotes to find all positions 
 		//using sequential loop to get all emotes.
-		for(positions of Object.values(user.emotes))
+		for(const positions of Object.values(user.emotes))
 		{
 			const position = positions[0]; //We only need the first position for every emote, as we can relpace all emotes of this kind
 			const [start, end] = position.split("-");
