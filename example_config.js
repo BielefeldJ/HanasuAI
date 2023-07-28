@@ -1,3 +1,4 @@
+const fs = require('fs');
 // Define configuration options for HanashAI
 
 //Config for tmi.js
@@ -6,17 +7,8 @@ const tmiconf = {
 		username: "USERNAME", //twitch username
 		password: "OAUTHTOKEN" //oauthtoken 
 	},
-	channels: [
-		'CHANNEL_NAME' //channel name, where the bot should join
-	]
+	channels: []
 };
-
-
-//List of users whose messages are ignored if automatic translation is enabled.
-const AutoTranslateIgnoredUser = ['streamelements','streamlabs','nightbot'];
-//List of channels, where the autotranslate function should be enabled by default
-//NOTE: channel names have to have a '#' infront of them!
-const AutoTranslateChannel = ['#channel']
 
 //Config for deepl
 const deeplconfig = {
@@ -26,9 +18,42 @@ const deeplconfig = {
 }
 
 //Twitch username of the Botowner
-const botowner = "TWITCHUSERNAME";
+const Botowner = "TWITCHUSERNAME";
 
 //File name where the bot logs the statistics
 const StatisticsFile = "stats.json";
+//File name were the bot loads/saves channel specific settings from/to
+const ChannelConfigFile = "channelconfog.json";
 
-module.exports = {tmiconf,deeplconfig,botowner,StatisticsFile,AutoTranslateIgnoredUser,AutoTranslateChannel};
+//List of users whose messages are ignored if automatic translation is enabled. for every channel
+const AutoTranslateIgnoredUserGlobal = ['streamelements','streamlabs','nightbot'];
+
+function loadChannelConfig() {
+	try {
+		const data = fs.readFileSync(ChannelConfigFile, 'utf8');
+		const channelconfig = JSON.parse(data);
+		tmiconf.channels = Object.keys(channelconfig); //set all channels from config file to tmijs
+		return channelconfig;
+	} catch (err) {
+		//save default config to file
+		const defaultConfig = {
+			"CHANNELNAME": {
+				autotranslate: false,
+				ignoreduser: [],
+			},
+		};
+		saveConfig(defaultConfig);
+		return false;
+	}
+}
+
+function saveChannelConfig(channelconfig) {
+	try {
+		fs.writeFileSync(ChannelConfigFile, JSON.stringify(channelconfig));
+		return true;
+	} catch (err) {
+		return false;
+	}
+}
+
+module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig};
