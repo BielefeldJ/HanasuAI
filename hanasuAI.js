@@ -5,18 +5,18 @@ console.log("HanasuAI is starting..");
 //imports
 //import config
 const config = require('./config.js');
+const tmi = require('tmi.js');
+const proc = require('process');
+const Translator = require('./translator.js');
+const Stats = require('./stats.js');
+
+//check if confog was loaded correctly
 const channelconfig = config.loadChannelConfig();
 if(!channelconfig)
 {
 	logger.error("ERR: No channelconfig file detected. Creating default one. Please edit and restart the bot.");
 	proc.exit();
 }
-
-//import all other stuff
-const tmi = require('tmi.js');
-const proc = require('process');
-const Translator = require('./translator.js');
-const Stats = require('./stats.js');
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
@@ -30,8 +30,8 @@ client.connect();
 
 //Create the Translator for deepl
 Translator.setClient(client);
-Translator.setAPIConfig(config.deeplconfig);
-Translator.setBotowner(config.botowner);
+Translator.setAPIConfig(config.DeeplConfig);
+Translator.setBotowner(config.Botowner);
 
 
 // Valid commands start with !
