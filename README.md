@@ -4,6 +4,20 @@ HanasuAI also has an auto-translating function. The bot translates every message
 
 [![tmi.js Version](https://img.shields.io/badge/tmi.js-1.8.3-success)](https://www.npmjs.org/package/tmi.js)
 
+Install NodeJS
+-------------
+* Install nodejs 
+* Download this repository 
+* Rename example_config.json -> config.json; example_channelconfig.json -> channelconfig.json
+* Edit config.json and channelconfig.json
+* Run `node hanasuAI.js`
+
+Install Docker
+-------------
+* Download / Copy the docker-compose.yml into a folder if your choice *recommended* 
+* Create or copy the config.js and channelconfig.js into the same folder as the docker-compose.yml
+* Edit both config files
+* Run `docker compose up -d`
 
 Commands List
 -------------
@@ -40,6 +54,12 @@ Command | Description | Usage
 `!api`	| Sends Deepl API usage to chat | `!api`
 `!broadcast` | Sends a message to every channel that uses HanasuAI | `!broadcast <text>`
 
+
+Help 
+-------------
+* I get the message: "error: No response from Twitch."
+
+If this is the case, either your TmiConf (oauth token in confog.json) is incorrect or you have a typo in your channel name. (channelconfig.json)
 
 List of requirements
 -------------
