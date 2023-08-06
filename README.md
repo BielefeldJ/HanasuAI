@@ -34,7 +34,6 @@ Command | Cescription | Usage
 `!infojp` | shows a "how to use" message in Japanese | `!infojp`
 `!jp` | translate a text into Japanese | `!jp <text>`
 `!en` | translate a text into English | `!en <text>`
-`!円` | alias for !en | `!円 <text>`
 
 
 ### Mods ###
@@ -53,6 +52,8 @@ Command | Description | Usage
 `!shutdown` | Shutdown the bot | `!shutdown`
 `!api`	| Sends Deepl API usage to chat | `!api`
 `!broadcast` | Sends a message to every channel that uses HanasuAI | `!broadcast <text>`
+`!joinchannel` | Activates the bot on a twitch channel aka joins it | `!joinchannel <channelname>`
+`!removechannel` | Removes the bot from a twitch channel | `!removechannel <channelname>`
 
 
 Help 
