@@ -23,7 +23,7 @@ const Botowner = "TWITCHUSERNAME";
 //File name where the bot logs the statistics
 const StatisticsFile = "stats.json";
 //File name were the bot loads/saves channel specific settings from/to
-const ChannelConfigFile = "channelconfig.json";
+const ChannelConfigFile = "config/channelconfig.json";
 
 //List of users whose messages are ignored if automatic translation is enabled. for every channel
 const AutoTranslateIgnoredUserGlobal = ['streamelements','streamlabs','nightbot'];

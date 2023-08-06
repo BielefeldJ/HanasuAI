@@ -1,9 +1,9 @@
-const config = require('./config/config');
+const config = require('../config/config');
 const fs = require('fs');
 const schedule = require('node-schedule');
 const {logger} = require('./logger.js');
 
-const STATSPATH = './stats/'
+const STATSPATH = 'stats/'
 
 //Module to save stats per channel and global
 var Statistics = {};

@@ -14,7 +14,9 @@ COPY . .
 
 #create volume for stats files
 VOLUME /hanasuAI/stats
-#create dummy config. Needs to be mounted in docker compose!
-RUN touch config.js
+VOLUME /hanasuAI/config
+
+#rename config. Needs to be mounted in docker compose!
+RUN mv config/example_config.js config/config.js
 
 CMD [ "npm", "start" ]

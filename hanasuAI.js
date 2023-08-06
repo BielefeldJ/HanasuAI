@@ -1,14 +1,14 @@
-const {logger} = require('./logger.js');
+const {logger} = require('./modules/logger.js');
 //HanasuAI can start now
 console.log("HanasuAI is starting..");
 
 //imports
 //import config
-const config = require('./config.js');
+const config = require('./config/config.js');
 const tmi = require('tmi.js');
 const proc = require('process');
-const Translator = require('./translator.js');
-const Stats = require('./stats.js');
+const Translator = require('./modules/translator.js');
+const Stats = require('./modules/stats.js');
 
 //check if confog was loaded correctly
 const channelconfig = config.loadChannelConfig();

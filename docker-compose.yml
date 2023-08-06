@@ -6,5 +6,5 @@ services:
     container_name: HanasuAI
     volumes:
       - ./stats:/hanasuAI/stats
-      - ./config.js:/hanasuAI/config.js
-      - ./channelconfig.json:/hanasuAI/channelconfig.json
+      - ./config.js:/hanasuAI/config/config.js
+      - ./channelconfig.json:/hanasuAI/config/channelconfig.json
