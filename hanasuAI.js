@@ -239,7 +239,8 @@ function onMessageHandler (target, user, msg, self) {
 			if(inputtext === 'off')
 			{ 	if(autotranslate)
 				{
-					channelconfig[channelname].autotranslate = false;				
+					channelconfig[channelname].autotranslate = false;	
+					config.saveChannelConfig(channelconfig);			
 					client.say(target,"Disabled auto-translation! | オートトランスレーションの無効化");
 					logger.log("AUTOMODE INFO: Disabled auto-translation for " + target);
 				}
@@ -252,6 +253,7 @@ function onMessageHandler (target, user, msg, self) {
 				if(!autotranslate) //to avoid double activation
 				{
 					channelconfig[channelname].autotranslate = true;
+					config.saveChannelConfig(channelconfig);
 					client.say(target,"Enabled auto-translation! | オートトランスレーションを有効にしました");
 					logger.log("AUTOMODE INFO: Enabled auto-translation for " + target);
 				}
