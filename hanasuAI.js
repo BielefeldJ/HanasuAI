@@ -10,6 +10,12 @@ const proc = require('process');
 const Translator = require('./modules/translator.js');
 const Stats = require('./modules/stats.js');
 
+//some ugly hackery stuff to get the import working.. idk a better way yet.
+var franc
+(async () => {
+	franc = (await import('franc-min')).franc;	
+})();
+
 //check if confog was loaded correctly
 const channelconfig = config.loadChannelConfig();
 if(!channelconfig)
@@ -102,31 +108,43 @@ function onMessageHandler (target, user, msg, self) {
 			return;
 		
 		//check if user is on ignorelist 
-		if(config.AutoTranslateIgnoredUser.includes(user.username))
+		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
 			return;
 
 		if(channelconfig[channelname].ignoreduser.includes(user.username))
 			return;
-			
+				
 		//temporarily replace all non english user.
 		//If a user was tagged in the message (user starting with @) and the name was written in Japanese Character like @こんばんは, HanasuAI thought the whole Message
 		//was japanese and tryed to translate this into english. Eventho the message was english in the first pace.
 		//It's only temp because Deepl handels Proper noun quite good. No need to remove them completly
 		//This Regex matches an @ at the beginning of a word followed by 1 to many non-word character like a-z A-Z or 0-9. The last \B ends the word.
 		let msgWithoutLocalNames = msg.replace(/\B@\W+\B/g, "")
-		if(jpcharacters.test(msgWithoutLocalNames))
-		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'EN-US');
-			Stats.incrementCounter(target.substring(1),'EN-US');
-		}
+
+		//detect the language that was used in the message
+		const detectLang = franc(msgWithoutLocalNames, { minLength: 5 });
+		const defaultLanguage = channelconfig[channelname].defaultLanguage;
+
+		//language Mapping.
+		// If the default language is eng and the detected language is eng as well -> translate to Japanes. If not -> english
+		//mapping if the following formalt:  ISO 639-3 ? deepl language code : deepl language code
+		//as franc uses ISO 639-3 and deepl has it's own language codes
+		const languageMappings = {
+			eng: { targetLanguage: detectLang === "eng" ? "JA" : "EN-US" },
+			jpn: { targetLanguage: detectLang === "jpn" ? "EN-US" : "JA" },
+		};
+
+		const { targetLanguage } = languageMappings[defaultLanguage];
+
 		//check if the english message has at least 5 character.
 		//This way I can ignore most messages like "hehe" "xD" or something like this. No need to translate them.
-		//This also makes sure that messages only containing unicode emojis are not translated.
-		else if(/[A-Za-z ]{5,}/.test(msg))
-		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(msg),'JA');
-			Stats.incrementCounter(target.substring(1),'JA');
-		}		
+		//This also makes sure that messages only containing unicode, so emojis only messages will not translated.
+		if(detectLang !== "jpn" && /^(?![A-Za-z ]{6})/.test(msg))
+			return;
+
+		Translator.translateToChat(target, recipient, encodeURIComponent(msg), targetLanguage);
+		Stats.incrementCounter(target.substring(1), targetLanguage);
+		
 		return;
 	}
 
@@ -243,6 +261,19 @@ function onMessageHandler (target, user, msg, self) {
 			}
 			return;
 		}	
+		else if(commandName === 'defaultlanguage' && hasParameter)
+		{
+			if(config.supportedLanguages.includes(inputtext))
+			{
+				client.say(target,`Changed default language to ${inputtext}`);
+				channelconfig[channelname].defaultLanguage = inputtext;
+				config.saveChannelConfig(channelconfig);
+			}
+			else
+				client.say("Please provide a default language. (eng, jpn)");
+
+			return;
+		}
 	}
 	//commands mods and owner can execute
 	if(isModUp || isBotOwner)

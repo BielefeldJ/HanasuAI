@@ -1,12 +1,13 @@
 {
   "dependencies": {
     "console-stamp": "^3.1.0",
+    "franc-min": "^6.1.0",
     "node-schedule": "^2.1.0",
     "tmi.js": "^1.8.5"
   },
   "name": "hanasuai",
   "description": "HanasuAI is a bot for translating text messages using the deepl API. The bot automatically detects the language of the message and translates it into the language specified with the command. \r HanasuAI also has an auto-translating function using the IBM Watson translator. The bot translates every message into Japanese or English, depending on what language was used in the message.",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "main": "hanasuAI.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

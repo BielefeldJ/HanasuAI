@@ -32,7 +32,12 @@ const AutoTranslateIgnoredUserGlobal = ['streamelements','streamlabs','nightbot'
 const defaultChannelConfig = {
 	autotranslate: false,
 	ignoreduser: [],
+	defaultLanguage: "jpn"
 }
+
+//THIS IS FIXED IN THE CODE!! Only change this if you know what you are doing!!
+//It's for validating the user input for the !defaultlanguage command
+const supportedLanguages = ['eng','jpn']; 
 
 function loadChannelConfig() {
 	try {
@@ -61,4 +66,4 @@ function saveChannelConfig(channelconfig) {
 	}
 }
 
-module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig,defaultChannelConfig};
+module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig,defaultChannelConfig,supportedLanguages};

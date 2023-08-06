@@ -45,6 +45,7 @@ Command | Description | Usage
 Command | Description | Usage
 ----------------|--------------|-------
 `!automode` | enables or disables the auto-translation feature | `!automode on\|off`
+`!defaultlanguage` | changes the language autotranslate will translate into | `!defaultlanguage eng` 
 
 ### Botowner ###
 Command | Description | Usage
