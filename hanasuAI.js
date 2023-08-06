@@ -2,20 +2,9 @@ const {logger} = require('./modules/logger.js');
 //HanasuAI can start now
 console.log("HanasuAI is starting..");
 
-//imports
+
 //import config
 const config = require('./config/config.js');
-const tmi = require('tmi.js');
-const proc = require('process');
-const Translator = require('./modules/translator.js');
-const Stats = require('./modules/stats.js');
-
-//some ugly hackery stuff to get the import working.. idk a better way yet.
-var franc
-(async () => {
-	franc = (await import('franc-min')).franc;	
-})();
-
 //check if confog was loaded correctly
 const channelconfig = config.loadChannelConfig();
 if(!channelconfig)
@@ -23,6 +12,17 @@ if(!channelconfig)
 	logger.error("ERR: No channelconfig file detected. Creating default one. Please edit and restart the bot.");
 	proc.exit();
 }
+
+//imports
+const tmi = require('tmi.js');
+const proc = require('process');
+const Translator = require('./modules/translator.js');
+const Stats = require('./modules/stats.js');
+//some ugly hackery stuff to get the import working.. idk a better way yet.
+var franc
+(async () => {
+	franc = (await import('franc-min')).franc;	
+})();
 
 // Create a client with our options
 const client = new tmi.client(config.tmiconf);
