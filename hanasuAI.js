@@ -213,6 +213,8 @@ function onMessageHandler (target, user, msg, self) {
 
 				config.saveChannelConfig(channelconfig); //save new config file.
 
+				Stats.addChannelToStatsData(channelname); //add user to stats system.
+
 				client.say(target, `Joined channel ${data[0]}!`);
 				logger.log( `Joined channel ${data[0]}!`);
 			}).catch((err) => 

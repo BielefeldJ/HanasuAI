@@ -55,7 +55,7 @@ function initStats()
 		Statistics.statsdata.perChannel.forEach(channelstats => {			
 			if (!config.tmiconf.channels.includes(channelstats.channel)) 
 			{
-				logger.log('INFO STATS INIT: Removing Channel' + channelstats.channel + ' becaust its is not in config anymore.')
+				logger.log('INFO STATS INIT: Removing Channel ' + channelstats.channel + ' becaust its is not in config anymore.')
 				let index = Statistics.statsdata.perChannel.indexOf(channelstats);
 				if (index > -1)
 					Statistics.statsdata.perChannel.splice(index, 1);
