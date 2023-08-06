@@ -42,8 +42,6 @@ Translator.setBotowner(config.Botowner);
 // Valid commands start with !
 const commandPrefix = '!'; //！
 const jpcommandPrefix = '！';
-//all JP characters (Hiragana,Katakana, Common, uncommon and rare kanji )
-const jpcharacters = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
 
 // Called every time a message comes in. Handler for all commands
 function onMessageHandler (target, user, msg, self) {
