@@ -53,6 +53,11 @@ function onMessageHandler (target, user, msg, self) {
 
 	//target.substring because the target channel has a leading #. So we remove that.
 	const channelname = target.substring(1);
+
+	//check if user is allowed to use HanasuAI or not.
+	if(channelconfig[channelname].ignoreduser.includes(user.username))
+		return;
+
 	//check if autotranslation is enabled for target channel 
 	const autotranslate = channelconfig[channelname].autotranslate;
 
@@ -109,9 +114,6 @@ function onMessageHandler (target, user, msg, self) {
 		
 		//check if user is on ignorelist 
 		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
-			return;
-
-		if(channelconfig[channelname].ignoreduser.includes(user.username))
 			return;
 				
 		//temporarily replace all non english user.
@@ -287,6 +289,28 @@ function onMessageHandler (target, user, msg, self) {
 			client.say(target,`Hey, I am still here. Running since ${uptime}!`);	
 			return;		
 		}	
+		else if(commandName === 'ignoreuser')
+		{
+			const userToIgnore = getUsernameFromInput(inputtext);
+			const ignoredUsers = channelconfig[channelname].ignoreduser;
+			const index = ignoredUsers.indexOf(userToIgnore);
+
+			if(index !== -1)
+			{
+				// Remove user from the ignoreduser array using splice
+				ignoredUsers.splice(index, 1);
+				client.say(target, `Removed user ${userToIgnore} from ignorelist.`);
+				logger.log(`removed user ${userToIgnore} from the ignore list for ${target}`);
+			}
+			else
+			{
+				ignoredUsers.push(userToIgnore);
+				client.say(target, `Added user ${userToIgnore} to ignorelist.`);
+				logger.log(`Added user ${userToIgnore} to the ignore list for ${target}`);
+			}
+			config.saveChannelConfig(channelconfig);
+			return;
+		}
 	}
 	// User commands
 	if (commandName === 'jp' && hasParameter) 
@@ -431,3 +455,19 @@ proc.on('uncaughtException', function(err) {
 	console.error('uncaughtException!!');
 	console.error((err && err.stack) ? err.stack : err);
   });
+
+function getUsernameFromInput(input)
+{
+	//Twitch display names are always the username. Usernames on Twitch are always lowercase
+	username = input.toLowerCase(); 
+	
+	 // If the sender tagged the user, remove the "@" at the beginning of the username
+	if (username.startsWith('@')) 
+		username = username.slice(1);
+	
+	// Check if the username only contains lowercase letters, numbers, and underscores
+	if(/^[a-z0-9_]*$/.test(username))
+		return username;
+	else
+		return null;
+}

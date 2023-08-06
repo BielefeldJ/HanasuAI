@@ -40,6 +40,7 @@ Command | Cescription | Usage
 Command | Description | Usage
 ----------------|--------------|-------
 `!hanasu` | A command to check if the bot is running + shows uptime | `!hanasu`
+`!ignoreuser` | adds or removes a user from the ignore list. The user can't use the bot anymore. | `!ignoreuser <username>`  
 
 ### Streamer ###
 Command | Description | Usage
