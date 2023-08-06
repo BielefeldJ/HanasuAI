@@ -51,8 +51,7 @@ function onMessageHandler (target, user, msg, self) {
 	const channelname = target.substring(1);
 
 	//check if user is allowed to use HanasuAI or not.
-	if(channelconfig[channelname].ignoreduser.includes(user.username))
-		return;
+	const blockedUser = channelconfig[channelname].ignoreduser.includes(user.username);
 
 	//check if autotranslation is enabled for target channel 
 	const autotranslate = channelconfig[channelname].autotranslate;
@@ -119,7 +118,7 @@ function onMessageHandler (target, user, msg, self) {
 			return;
 		
 		//check if user is on ignorelist 
-		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
+		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username) || blockedUser)
 			return;
 				
 		//temporarily replace all non english user.
@@ -303,9 +302,6 @@ function onMessageHandler (target, user, msg, self) {
 		{
 			const userToIgnore = getUsernameFromInput(inputtext);
 
-			if(userToIgnore === user.username) //prevent user from blocking themself
-				return;
-
 			if(!userToIgnore)
 			{
 				client.say(target,"Please provide a valid twitch username. (Not a displayname!)");
@@ -351,8 +347,8 @@ function onMessageHandler (target, user, msg, self) {
 			return;
 		}
 	}
-	// User commands
-	if (commandName === 'jp' && hasParameter) 
+	// User commands	
+	if (commandName === 'jp' && hasParameter && !blockedUser) 
 	{
 		try 
 		{
@@ -366,7 +362,7 @@ function onMessageHandler (target, user, msg, self) {
 
 		return;
 	}
-	else if((commandName === 'en' || commandName === '円') && hasParameter)
+	else if((commandName === 'en' || commandName === '円') && hasParameter && !blockedUser)
 	{		
 		try 
 		{
@@ -380,7 +376,7 @@ function onMessageHandler (target, user, msg, self) {
 
 		return;
 	}
-	else if (commandName === 'es' && hasParameter) 
+	else if (commandName === 'es' && hasParameter && !blockedUser) 
 	{
 		try 
 		{
@@ -393,7 +389,7 @@ function onMessageHandler (target, user, msg, self) {
 
 		return;
 	}
-	else if (commandName === 'fr' && hasParameter) 
+	else if (commandName === 'fr' && hasParameter && !blockedUser) 
 	{
 		try 
 		{
