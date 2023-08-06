@@ -302,6 +302,10 @@ function onMessageHandler (target, user, msg, self) {
 		else if(commandName === 'ignoreuser' && hasParameter)
 		{
 			const userToIgnore = getUsernameFromInput(inputtext);
+
+			if(userToIgnore === user.username) //prevent user from blocking themself
+				return;
+
 			if(!userToIgnore)
 			{
 				client.say(target,"Please provide a valid twitch username. (Not a displayname!)");
