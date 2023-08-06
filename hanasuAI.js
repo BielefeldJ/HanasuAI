@@ -199,7 +199,8 @@ function onMessageHandler (target, user, msg, self) {
 		}
 		else if(commandName === "joinchannel" && hasParameter) //adds the bot to some twitch channel
 		{
-			client.join(inputtext).then((data) => {
+			const userToJoin = getUsernameFromInput(inputtext); //no need for null check as client.join should go into catch.
+			client.join(userToJoin).then((data) => {
 				
 				const channelname = data[0].substring(1);
 				channelconfig[channelname] = {...config.defaultChannelConfig}; //add default config to new entry
@@ -210,14 +211,15 @@ function onMessageHandler (target, user, msg, self) {
 				logger.log( `Joined channel ${data[0]}!`);
 			}).catch((err) => 
 			{
-				client.say(target,`Could not join channel ${inputtext}. Please check logs.`);
-				logger.log(`ERROR joining channel ${inputtext}: ${err}`);
+				client.say(target,`Could not join channel ${userToJoin}. Please check logs.`);
+				logger.log(`ERROR joining channel ${userToRemove}: ${err}`);
 			});
 			return;
 		}
 		else if(commandName === "removechannel" && hasParameter) //removes the bot from a twitchchannel
 		{
-			client.part(inputtext).then((data) => 
+			const userToRemove = getUsernameFromInput(inputtext); //no need for null check as client.join should go into catch.
+			client.part(userToRemove).then((data) => 
 			{
 				const channelname = data[0].substring(1);
 				delete channelconfig[channelname]; //remove entry from config.
@@ -227,8 +229,8 @@ function onMessageHandler (target, user, msg, self) {
 				logger.log( `Disconnected from channel ${data[0]}!`);
 			}).catch((err) => 
 			{
-				client.say(target,`Could not disconnect from channel ${inputtext}. Please check logs.`);
-				logger.log(`ERROR disconnecting from channel ${inputtext}: ${err}`);
+				client.say(target,`Could not disconnect from channel ${userToRemove}. Please check logs.`);
+				logger.log(`ERROR disconnecting from channel ${userToRemove}: ${err}`);
 			});
 			return;
 		}
@@ -292,6 +294,11 @@ function onMessageHandler (target, user, msg, self) {
 		else if(commandName === 'ignoreuser')
 		{
 			const userToIgnore = getUsernameFromInput(inputtext);
+			if(!userToIgnore)
+			{
+				client.say(target,"Please provide a valid twitch username. (Not a displayname!)");
+				return;
+			}
 			const ignoredUsers = channelconfig[channelname].ignoreduser;
 			const index = ignoredUsers.indexOf(userToIgnore);
 
