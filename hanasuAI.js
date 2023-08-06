@@ -120,7 +120,7 @@ function onMessageHandler (target, user, msg, self) {
 		//check if user is on ignorelist 
 		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username) || blockedUser)
 			return;
-				
+
 		//temporarily replace all non english user.
 		//If a user was tagged in the message (user starting with @) and the name was written in Japanese Character like @こんばんは, HanasuAI thought the whole Message
 		//was japanese and tryed to translate this into english. Eventho the message was english in the first pace.
@@ -146,12 +146,12 @@ function onMessageHandler (target, user, msg, self) {
 		//check if the english message has at least 5 character.
 		//This way I can ignore most messages like "hehe" "xD" or something like this. No need to translate them.
 		//This also makes sure that messages only containing unicode, so emojis only messages will not translated.
-		if(detectLang !== "jpn" && /^(?![A-Za-z ]{6})/.test(msg))
+		if(detectLang !== "jpn" && !/[A-Za-z ]{5,}/.test(msg))
 			return;
 
 		Translator.translateToChat(target, recipient, encodeURIComponent(msg), targetLanguage);
 		Stats.incrementCounter(target.substring(1), targetLanguage);
-		
+
 		return;
 	}
 
