@@ -28,6 +28,12 @@ const ChannelConfigFile = "channelconfig.json";
 //List of users whose messages are ignored if automatic translation is enabled. for every channel
 const AutoTranslateIgnoredUserGlobal = ['streamelements','streamlabs','nightbot'];
 
+//Default config that will be added to every new user. 
+const defaultChannelConfig = {
+	autotranslate: false,
+	ignoreduser: [],
+}
+
 function loadChannelConfig() {
 	try {
 		const data = fs.readFileSync(ChannelConfigFile, 'utf8');
@@ -38,8 +44,7 @@ function loadChannelConfig() {
 		//save default config to file
 		const defaultConfig = {
 			"CHANNELNAME": {
-				autotranslate: false,
-				ignoreduser: [],
+				...defaultChannelConfig
 			},
 		};
 		saveChannelConfig(defaultConfig);
@@ -56,4 +61,4 @@ function saveChannelConfig(channelconfig) {
 	}
 }
 
-module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig};
+module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig,defaultChannelConfig};

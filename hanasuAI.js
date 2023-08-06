@@ -33,7 +33,6 @@ Translator.setClient(client);
 Translator.setAPIConfig(config.DeeplConfig);
 Translator.setBotowner(config.Botowner);
 
-
 // Valid commands start with !
 const commandPrefix = '!'; //！
 const jpcommandPrefix = '！';
@@ -46,7 +45,6 @@ const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+
 function onMessageHandler (target, user, msg, self) {
 	if (self) { return; } // Ignore messages from the bot
 
-	
 	//target.substring because the target channel has a leading #. So we remove that.
 	const channelname = target.substring(1);
 	//check if autotranslation is enabled for target channel 
@@ -177,6 +175,41 @@ function onMessageHandler (target, user, msg, self) {
 		{
 			for(channel of config.tmiconf.channels)	
 				client.say(channel,inputtext);
+			return;
+		}
+		else if(commandName === "joinchannel" && hasParameter) //adds the bot to some twitch channel
+		{
+			client.join(inputtext).then((data) => {
+				
+				const channelname = data[0].substring(1);
+				channelconfig[channelname] = {...config.defaultChannelConfig}; //add default config to new entry
+
+				config.saveChannelConfig(channelconfig); //save new config file.
+
+				client.say(target, `Joined channel ${data[0]}!`);
+				logger.log( `Joined channel ${data[0]}!`);
+			}).catch((err) => 
+			{
+				client.say(target,`Could not join channel ${inputtext}. Please check logs.`);
+				logger.log(`ERROR joining channel ${inputtext}: ${err}`);
+			});
+			return;
+		}
+		else if(commandName === "removechannel" && hasParameter) //removes the bot from a twitchchannel
+		{
+			client.part(inputtext).then((data) => 
+			{
+				const channelname = data[0].substring(1);
+				delete channelconfig[channelname]; //remove entry from config.
+
+				config.saveChannelConfig(channelconfig); //save new file
+				client.say(target, `I left from channel ${data[0]}!`);
+				logger.log( `Disconnected from channel ${data[0]}!`);
+			}).catch((err) => 
+			{
+				client.say(target,`Could not disconnect from channel ${inputtext}. Please check logs.`);
+				logger.log(`ERROR disconnecting from channel ${inputtext}: ${err}`);
+			});
 			return;
 		}
 	}
