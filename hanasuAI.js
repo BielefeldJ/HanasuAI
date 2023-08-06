@@ -44,8 +44,6 @@ const commandPrefix = '!'; //！
 const jpcommandPrefix = '！';
 //all JP characters (Hiragana,Katakana, Common, uncommon and rare kanji )
 const jpcharacters = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf]/;
-//Regex for URL and E-Mail addresses
-const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)/
 
 // Called every time a message comes in. Handler for all commands
 function onMessageHandler (target, user, msg, self) {
@@ -88,8 +86,18 @@ function onMessageHandler (target, user, msg, self) {
 		};
 	}
 
-	//remove URL and e-mail addresses from the message. 	
+	//remove URL and e-mail addresses from the message. 
+	//Regex for URL and E-Mail addresses
+	const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)/
 	msg = msg.replace(urlRegex,"");
+
+	//remove banned words from the message
+	const bannedWords = channelconfig[channelname].bannedWords;
+	const bannedWordRegex = new RegExp(`\\b(${bannedWords.join('|')})\\b`, 'gi');
+	//replace all banned words with nothing
+	msg = msg.replace( bannedWordRegex, '');
+	//remove all the extra spaces 
+	msg = msg.replace(/\s+/g, ' ').trim();
 
 	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
 	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
@@ -291,7 +299,7 @@ function onMessageHandler (target, user, msg, self) {
 			client.say(target,`Hey, I am still here. Running since ${uptime}!`);	
 			return;		
 		}	
-		else if(commandName === 'ignoreuser')
+		else if(commandName === 'ignoreuser' && hasParameter)
 		{
 			const userToIgnore = getUsernameFromInput(inputtext);
 			if(!userToIgnore)
@@ -306,14 +314,34 @@ function onMessageHandler (target, user, msg, self) {
 			{
 				// Remove user from the ignoreduser array using splice
 				ignoredUsers.splice(index, 1);
-				client.say(target, `Removed user ${userToIgnore} from ignorelist.`);
-				logger.log(`removed user ${userToIgnore} from the ignore list for ${target}`);
+				client.say(target, `Removed user ${userToIgnore} from the ignorelist.`);
+				logger.log(`Removed user ${userToIgnore} from the ignore list for ${target}`);
 			}
 			else
 			{
 				ignoredUsers.push(userToIgnore);
-				client.say(target, `Added user ${userToIgnore} to ignorelist.`);
+				client.say(target, `Added user ${userToIgnore} to the ignorelist.`);
 				logger.log(`Added user ${userToIgnore} to the ignore list for ${target}`);
+			}
+			config.saveChannelConfig(channelconfig);
+			return;
+		}
+		else if(commandName == "banword" && hasParameter)
+		{
+			const bannedWords = channelconfig[channelname].bannedWords;
+			const index = bannedWords.indexOf(inputtext);
+
+			if(index !== -1)
+			{
+				bannedWords.splice(index, 1);
+				client.say(target, `Removed "${inputtext}" from the banned words list.`);
+				logger.log(`Removed ${inputtext} from the banned word list for ${target}`);
+			}
+			else
+			{
+				bannedWords.push(inputtext);
+				client.say(target, `Added "${inputtext}" to the banned words list.`);
+				logger.log(`Added ${inputtext} to the banned word list for ${target}`);
 			}
 			config.saveChannelConfig(channelconfig);
 			return;

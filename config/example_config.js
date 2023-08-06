@@ -32,7 +32,8 @@ const AutoTranslateIgnoredUserGlobal = ['streamelements','streamlabs','nightbot'
 const defaultChannelConfig = {
 	autotranslate: false,
 	ignoreduser: [],
-	defaultLanguage: "jpn"
+	defaultLanguage: "jpn",
+	bannedWords: []
 }
 
 //THIS IS FIXED IN THE CODE!! Only change this if you know what you are doing!!

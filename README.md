@@ -41,6 +41,7 @@ Command | Description | Usage
 ----------------|--------------|-------
 `!hanasu` | A command to check if the bot is running + shows uptime | `!hanasu`
 `!ignoreuser` | adds or removes a user from the ignore list. The user can't use the bot anymore. | `!ignoreuser <username>`  
+`!banword` | adds or removes a word that will not be translated anymore | `!banword <word>`
 
 ### Streamer ###
 Command | Description | Usage
