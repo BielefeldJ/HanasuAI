@@ -1,7 +1,9 @@
-const config = require('./config');
+const config = require('../config/config');
 const fs = require('fs');
 const schedule = require('node-schedule');
 const {logger} = require('./logger.js');
+
+const STATSPATH = 'stats/'
 
 //Module to save stats per channel and global
 var Statistics = {};
@@ -24,7 +26,7 @@ Statistics.writeStatsToFileSync = () =>
 {
 	let data = JSON.stringify(Statistics.statsdata, null, 2);
 	try{
-		fs.writeFileSync('./stats/' + config.StatisticsFile, data)
+		fs.writeFileSync(STATSPATH + config.StatisticsFile, data)
 	}
 	catch(err)
 	{
@@ -34,7 +36,7 @@ Statistics.writeStatsToFileSync = () =>
 Statistics.writeStatsToFileAsync = () =>
 {
 	let data = JSON.stringify(Statistics.statsdata, null, 2);
-	fs.writeFile('./stats/' + config.StatisticsFile, data, (err) => {
+	fs.writeFile(STATSPATH + config.StatisticsFile, data, (err) => {
 		if (err) logger.error('ERROR WRITING TO STATSFILE ASYNC' + err);
 	});	
 }
@@ -47,7 +49,7 @@ function initStats()
 {
 	try
 	{
-		let data = fs.readFileSync('./stats/' + config.StatisticsFile); //read stats file
+		let data = fs.readFileSync(STATSPATH + config.StatisticsFile); //read stats file
 		Statistics.statsdata = JSON.parse(data);
 		//check if there are stats for a channel, thats not in the config anymore, remove object, if not in config
 		Statistics.statsdata.perChannel.forEach(channelstats => {			
@@ -163,8 +165,8 @@ schedule.scheduleJob('0 0 1 * *', () => {
 	var date = new Date();
 	date.setDate(date.getDate() - 1); 
 	date = date.toISOString().split('T')[0].split('-');
-	var newname = './stats/' + date[0] + '-' + date[1] + '-' + config.StatisticsFile;
-	fs.renameSync('./stats/' + config.StatisticsFile,newname);
+	var newname = STATSPATH + date[0] + '-' + date[1] + '-' + config.StatisticsFile;
+	fs.renameSync(STATSPATH + config.StatisticsFile,newname);
 	Statistics.resetChannelStats();
 	Statistics.writeStatsToFileSync();
 	logger.log('STATS INFO: Monthly counter reset triggered.')
