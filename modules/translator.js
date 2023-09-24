@@ -1,4 +1,4 @@
-const https = require('https');
+const axios = require('axios');
 const {logger} = require('./logger.js');
 
 //this module holds functions for the deepl API
@@ -33,10 +33,17 @@ Translator.setBotowner = (botowner) => {
 //lang = target language
 Translator.translateToChat = (target, recipient, inputtext, lang) => {
 
-	//building request url
-	const url = Translator.URL + `translate?auth_key=${Translator.APIKEY}&text=${inputtext}&target_lang=${lang}`;
+	//building request body
+	const translateBody = JSON.stringify({
+		"text": [
+		  `${inputtext}`
+		],
+		"target_lang": `${lang}`,
+		"formality": "less",
+		"preserve_formatting": true
+	});
 
-	Translator.sendAPIRequest(url, translated => {
+	Translator.sendAPIRequest("POST", "translate", translateBody, translated => {
 		if(translated.getstatusCode() === 200)
 		{
 			let chatmessage = translated.answer();
@@ -46,7 +53,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 		}
 		else
 		{
-			let errmsg = `Translate request Failed. Error Code: ${statusCode}`;
+			let errmsg = `Translate request Failed. Error Code: ${translated.getstatusCode()}`;
 			//send error message to chat
 			Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);
 			logger.error(errmsg);
@@ -56,9 +63,9 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 
 //function to send the usage of the API to chat. 
 //target = twitch channel target 
-Translator.sendAPIUsageToChat = (target) => {
-	const url = Translator.URL + `usage?auth_key=${Translator.APIKEY}`;
-	Translator.sendAPIRequest(url, usage => {
+Translator.sendAPIUsageToChat = (target) => {	
+
+	Translator.sendAPIRequest("GET","usage", null, usage => {
 		if(usage.getstatusCode() === 200)
 		{
 			let statsMsg = `API usage this month ✏️📈 : ${usage.rawdata().character_count} out of 500000 characters used.`;
@@ -66,7 +73,7 @@ Translator.sendAPIUsageToChat = (target) => {
 		}
 		else
 		{
-			let errmsg = `Usage request Failed. Error Code: ${statusCode}`;
+			let errmsg = `Usage request Failed. Error Code: ${usage.getstatusCode()}`;
 			//send error message to chat
 			Translator.client.say(target, `${errmsg}`);
 			logger.error(errmsg);
@@ -75,37 +82,27 @@ Translator.sendAPIUsageToChat = (target) => {
 }
 
 //Sends the request to the API
-Translator.sendAPIRequest = (url, callback) =>
+Translator.sendAPIRequest = (method, path, body, callback) =>
 {
-	const req = https.get(url, res => {
+	let requestOptions = {
+		method: method,
+		url: Translator.URL + path,
+		headers: {	"Authorization": `DeepL-Auth-Key ${Translator.APIKEY}`,
+					"Content-Type": "application/json"},
+		data: `${body}`,
+	};
 
-		//API error handling
-		const {statusCode} = res;
-		if(statusCode !== 200)
-		{
-			callback(new Translator.apiData(null,statusCode));
-			// Consume response data to free up memory
-			res.resume();
-			return;		
-		}
-
-		//collecting res data
-		let resdata = [];
-		res.on('data', chunk =>
-		{
-			resdata.push(chunk);
-		});
-
-		//eval data and send to chat
-		res.on('end', () =>{
-			//parse res to JSON
-			let answer = JSON.parse(Buffer.concat(resdata).toString());
-			callback(new Translator.apiData(answer,statusCode));			
-		});
-	}).on('error', err => {
-		logger.error('Error: ', err.message);
-	});
-	req.end();
+	axios(requestOptions)
+	.then(response => {
+		if(response.status === 200)		
+			callback(new Translator.apiData(response.data ,response.status))
+		else
+			callback(new Translator.apiData(null,response.status));
+	})
+	.catch(error => {
+		callback(new Translator.apiData(null, error.response.status));	
+		logger.error("AXIOS ERROR: " + error);
+	});	
 }
 
 Translator.apiData = function(apidata,statusCode){

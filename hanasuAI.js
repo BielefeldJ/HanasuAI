@@ -149,7 +149,7 @@ function onMessageHandler (target, user, msg, self) {
 		if(detectLang !== "jpn" && !/[A-Za-z ]{5,}/.test(msg))
 			return;
 
-		Translator.translateToChat(target, recipient, encodeURIComponent(msg), targetLanguage);
+		Translator.translateToChat(target, recipient, msg), targetLanguage;
 		Stats.incrementCounter(target.substring(1), targetLanguage);
 
 		return;
@@ -352,7 +352,7 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		try 
 		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'JA');
+			Translator.translateToChat(target,recipient, inputtext,'JA');
 			Stats.incrementCounter(target.substring(1),'JA');			
 		} catch (error) 
 		{
@@ -366,7 +366,7 @@ function onMessageHandler (target, user, msg, self) {
 	{		
 		try 
 		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'EN-US');
+			Translator.translateToChat(target,recipient,inputtext,'EN-US');
 			Stats.incrementCounter(target.substring(1),'EN-US');			
 		} catch (error) 
 		{
@@ -380,7 +380,7 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		try 
 		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'ES');		
+			Translator.translateToChat(target,recipient,inputtext,'ES');		
 		} catch (error) 
 		{
 			logger.error('Error translating this message to Spanish: ' + inputtext);
@@ -393,7 +393,7 @@ function onMessageHandler (target, user, msg, self) {
 	{
 		try 
 		{
-			Translator.translateToChat(target,recipient,encodeURIComponent(inputtext),'FR');		
+			Translator.translateToChat(target,recipient,inputtext,'FR');		
 		} catch (error) 
 		{
 			logger.error('Error translating this message to French: ' + inputtext);
