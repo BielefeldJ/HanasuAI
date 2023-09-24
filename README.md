@@ -70,8 +70,8 @@ List of requirements
 * [tmi.js](https://github.com/tmijs/tmi.js)
 * [Deepl API](https://www.deepl.com/pro?cta=header-prices/)
 * [node-schedule](https://github.com/node-schedule/node-schedule)
+* [axios](https://github.com/axios/axios) 
 * fs
-* https
 * process
 * nodejs
     
