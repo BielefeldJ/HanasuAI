@@ -45,10 +45,15 @@ const jpcommandPrefix = '！';
 
 // Called every time a message comes in. Handler for all commands
 function onMessageHandler (target, user, msg, self) {
-	if (self) { return; } // Ignore messages from the bot
-
-	//target.substring because the target channel has a leading #. So we remove that.
-	const channelname = target.substring(1);
+	if (self) // Ignore messages from the bot
+	 return;  
+	 
+	 //target.substring because the target channel has a leading #. So we remove that.
+	 const channelname = target.substring(1);
+	 
+	 //ignore messages HanasuAI gets via PM because the user isn't in config
+	if(!channelconfig.hasOwnProperty(channelname))
+		return;
 
 	//check if user is allowed to use HanasuAI or not.
 	const blockedUser = channelconfig[channelname].ignoreduser.includes(user.username);
