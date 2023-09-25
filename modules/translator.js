@@ -39,10 +39,10 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 		  `${inputtext}`
 		],
 		"target_lang": `${lang}`,
-		"formality": "less",
+		"formality": "prefer_less",
 		"preserve_formatting": true
 	});
-
+	console.log(translateBody)
 	Translator.sendAPIRequest("POST", "translate", translateBody, translated => {
 		if(translated.getstatusCode() === 200)
 		{
@@ -102,6 +102,7 @@ Translator.sendAPIRequest = (method, path, body, callback) =>
 	.catch(error => {
 		callback(new Translator.apiData(null, error.response.status));	
 		logger.error("AXIOS ERROR: " + error);
+		logger.error("AXIOS ERROR: " + error.response.data );
 	});	
 }
 
