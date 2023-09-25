@@ -42,7 +42,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 		"formality": "prefer_less",
 		"preserve_formatting": true
 	});
-	console.log(translateBody)
+
 	Translator.sendAPIRequest("POST", "translate", translateBody, translated => {
 		if(translated.getstatusCode() === 200)
 		{
