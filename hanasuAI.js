@@ -154,7 +154,7 @@ function onMessageHandler (target, user, msg, self) {
 		if(detectLang !== "jpn" && !/[A-Za-z ]{5,}/.test(msg))
 			return;
 
-		Translator.translateToChat(target, recipient, msg), targetLanguage;
+		Translator.translateToChat(target, recipient, msg, targetLanguage);
 		Stats.incrementCounter(target.substring(1), targetLanguage);
 
 		return;
