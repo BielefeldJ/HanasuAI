@@ -59,7 +59,12 @@ function onMessageHandler (target, user, msg, self) {
 	const blockedUser = channelconfig[channelname].ignoreduser.includes(user.username);
 
 	//check if autotranslation is enabled for target channel 
-	const autotranslate = channelconfig[channelname].autotranslate;
+	const autoTranslateChannel = channelconfig[channelname].autotranslate;
+
+	//check if auto translation is enabled for a user
+	const autoTranslateUser = channelconfig[channelname].autouser.includes(user.username);
+
+	const autotranslate = autoTranslateChannel || autoTranslateUser;
 
 	//remove emotes from message, because they can mess up the translation. (Thanks to stefanjudis for this idea/example code on how to handle emotes)
 	//This also prevents the bot from trying to translate messages, that are filled with emotes only.
@@ -331,7 +336,7 @@ function onMessageHandler (target, user, msg, self) {
 			config.saveChannelConfig(channelconfig);
 			return;
 		}
-		else if(commandName == "banword" && hasParameter)
+		else if(commandName === "banword" && hasParameter)
 		{
 			const bannedWords = channelconfig[channelname].bannedWords;
 			const index = bannedWords.indexOf(inputtext);
@@ -347,6 +352,35 @@ function onMessageHandler (target, user, msg, self) {
 				bannedWords.push(inputtext);
 				client.say(target, `Added "${inputtext}" to the banned words list.`);
 				logger.log(`Added ${inputtext} to the banned word list for ${target}`);
+			}
+			config.saveChannelConfig(channelconfig);
+			return;
+		}
+		else if(commandName === "autouser" && hasParameter)
+		{
+			const autoTranslateUser = getUsernameFromInput(inputtext);
+
+			if(!autoTranslateUser)
+			{
+				client.say(target,"Please provide a valid twitch username. (Not a displayname!)");
+				return;
+			}
+
+			const autotranslateUserList = channelconfig[channelname].autouser;
+			const index = autotranslateUserList.indexOf(autoTranslateUser);
+
+			if(index !== -1)
+			{
+				// Remove user from the ignoreduser array using splice
+				autotranslateUserList.splice(index, 1);
+				client.say(target, `Removed user ${autoTranslateUser} from the auto translation.`);
+				logger.log(`Removed user ${autoTranslateUser} from the auto translate list for ${target}`);
+			}
+			else
+			{
+				autotranslateUserList.push(autoTranslateUser);
+				client.say(target, `Added user ${autoTranslateUser} to the auto translation list.`);
+				logger.log(`Added user ${autoTranslateUser} to the auto translation list for ${target}`);
 			}
 			config.saveChannelConfig(channelconfig);
 			return;
