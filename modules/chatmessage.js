@@ -94,8 +94,11 @@ class ChatMessage {
 		const command = {
 			commandName: "",
 			inputtext: "",
-			hasParameter: false
+			hasParameter: false,
+			recipient : null
 		};
+
+		command.recipient = this.getRecipient(); //get the recipient of the message if there is one
 
 		const spaceIndex = this.#message.indexOf(" ");
 
@@ -113,6 +116,7 @@ class ChatMessage {
 			command.inputtext = this.#message.substring(spaceIndex +1);
 			command.hasParameter = true;					
 		}
+		
 		return command;
 	}
 }
