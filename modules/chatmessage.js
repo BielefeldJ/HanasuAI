@@ -1,9 +1,11 @@
 class ChatMessage {
 
 	#message;
+	#commandPrefixes;
 
-	constructor(message) {
+	constructor(message, commandPrefixes) {
 		this.#message = message;
+		this.#commandPrefixes = commandPrefixes;
 	}
 
 	getMessage() 
@@ -65,7 +67,54 @@ class ChatMessage {
 			this.#message = this.#message.replace(new RegExp(emote.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'),'');
 		};
 	}
+
+	getRecipient() 
+	{
+		let recipient = null;
+		const tagIndex = this.#message.indexOf('@');
+
+		if(tagIndex === 0)
+		{
+			const firstSpaceIndex = this.#message.indexOf(' ');
+			recipient = firstSpaceIndex !== -1 ? this.#message.substring(tagIndex, firstSpaceIndex) : this.#message;
+			this.#message = firstSpaceIndex !== -1 ? this.#message.substring(firstSpaceIndex + 1) : '';
+		}
+
+		return recipient;
+	}
 	
+	isCommand() 
+	{
+		// Valid commands start with !		
+		return this.#commandPrefixes.includes(this.#message.charAt(0));
+	}
+
+	createCommand()
+	{
+		const command = {
+			commandName: "",
+			inputtext: "",
+			hasParameter: false
+		};
+
+		const spaceIndex = this.#message.indexOf(" ");
+
+		//used to check if the user send parameter
+		if(spaceIndex < 0)
+		{
+			command.commandName = this.#message.slice(1).toLowerCase();
+			command.hasParameter = false;
+		}
+		else
+		{
+			// The command name is the first substring one and remove the !:
+			command.commandName = this.#message.substring(1, spaceIndex).toLowerCase();
+			//The message that should be translated and remove the first space 
+			command.inputtext = this.#message.substring(spaceIndex +1);
+			command.hasParameter = true;					
+		}
+		return command;
+	}
 }
 
 module.exports = ChatMessage;
