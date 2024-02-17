@@ -42,6 +42,7 @@ Translator.setBotowner(config.Botowner);
 
 const commandPrefixes = ['!', '！']; //command prefixes for the bot
 
+//function to handle auto translation
 function handelAutoTranslate(msg, target, recipient, channelname)
 {
 	//ignore empty messages.
@@ -80,6 +81,7 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 	Stats.incrementCounter(target.substring(1), targetLanguage);
 }
 
+//function to handle botowner commands
 function botownerCommand(command, target, channelname)
 {
 	if(command.commandName === 'shutdown') //shutdown the bot
@@ -139,6 +141,7 @@ function botownerCommand(command, target, channelname)
 	}
 }
 
+//function to handle broadcaster commands
 function broadcasterCommand(command, target, autotranslate, channelname)
 {
 	if(command.commandName === 'automode' && command.hasParameter) //enable or disable auto translation for the channel
@@ -185,6 +188,7 @@ function broadcasterCommand(command, target, autotranslate, channelname)
 	}
 }
 
+//function to handle mod commands
 function modCommand(command, target, channelname)
 {
 	if(command.commandName === 'hanasu') //ping command to check if the bot is sill running + uptime
