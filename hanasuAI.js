@@ -339,60 +339,34 @@ function userCommand(command, target, autotranslate)
 
 function translateCommand(command, target)
 {
-	if (command.commandName === 'jp' && command.hasParameter) 
+	//mapping for the language codes
+	// command.commandName is the command the user used. This is the key for the mapping
+	// the value is the language code for the deepl API
+	const languageMappings = {
+		'jp': 'JA',
+		'en': 'EN-US',
+		'円': 'EN-US',
+		'es': 'ES',
+		'fr': 'FR'
+	};
+
+	//get the language code for the command
+	const targetLanguage = languageMappings[command.commandName];
+
+	if (targetLanguage && command.hasParameter) //translate the message to the target language
 	{
 		try 
 		{
-			Translator.translateToChat(target, command.recipient, command.inputtext,'JA');
-			Stats.incrementCounter(target.substring(1),'JA');			
+			Translator.translateToChat(target, command.recipient, command.inputtext,targetLanguage);
+			Stats.incrementCounter(target.substring(1), targetLanguage);			
 		} catch (error) 
 		{
-			logger.error('Error translating this message to Japanese: ' + command.inputtext);
+			logger.error(`Error translating this message to ${languageCode}: ${command.inputtext}`);
 			logger.error(error);
 		}
 
 		return;
-	}
-	else if((command.commandName === 'en' || command.commandName === '円') && command.hasParameter)
-	{		
-		try 
-		{
-			Translator.translateToChat(target, command.recipient, command.inputtext,'EN-US');
-			Stats.incrementCounter(target.substring(1),'EN-US');			
-		} catch (error) 
-		{
-			logger.error('Error translating this message to English: ' + command.inputtext);
-			logger.error(error);			
-		}
-
-		return;
-	}
-	else if (command.commandName === 'es' && command.hasParameter) 
-	{
-		try 
-		{
-			Translator.translateToChat(target, command.recipient, command.inputtext,'ES');		
-		} catch (error) 
-		{
-			logger.error('Error translating this message to Spanish: ' + command.inputtext);
-			logger.error(error);
-		}
-
-		return;
-	}
-	else if (command.commandName === 'fr' && command.hasParameter ) 
-	{
-		try 
-		{
-			Translator.translateToChat(target, command.recipient, command.inputtext,'FR');		
-		} catch (error) 
-		{
-			logger.error('Error translating this message to French: ' + command.inputtext);
-			logger.error(error);
-		}
-
-		return;
-	}
+	}	
 }
 
 // Called every time a message comes in. Handler for all commands
@@ -449,24 +423,20 @@ function onMessageHandler (target, user, msg, self)
 		const isBroadcaster = target.slice(1) === user.username || isBotOwner; //check if user broadcaster by comparing current channel with the username of the sender
 		const isMod = user.mod || user['user-type'] === 'mod'|| isBroadcaster || isBotOwner; //check if user is a mod
 	
-		//commands only the Botowner can execute
-		if(isBotOwner)
+		//execute the command based on the user role
+		//exploiting the fact that switch cases fall through if no break is used
+		switch(true)
 		{
-			botownerCommand(command, target, channelname);
-		}
-		//commands streamer + botowner
-		if(isBroadcaster)
-		{
-			broadcasterCommand(command, target, autoTranslateChannel, channelname);
-		}
-		//commands mods and owner can execute
-		if(isMod)
-		{
-			modCommand(command, target, channelname);
-		}
-		// User commands	
-		userCommand(command, target, autoTranslateChannel);
-		translateCommand(command, target);		
+			case isBotOwner:
+				botownerCommand(command, target, channelname);
+			case isBroadcaster:
+				broadcasterCommand(command, target, autoTranslateChannel, channelname);
+			case isMod:	
+				modCommand(command, target, channelname);
+			default:
+				userCommand(command, target, autoTranslateChannel);
+				translateCommand(command, target);
+		}		
 	}	
 	else
 	{
