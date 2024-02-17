@@ -3,6 +3,7 @@
 		"autotranslate":false,
 		"ignoreduser":[],
 		"defaultLanguage" : "ISO 639-3 language code!",
-		"bannedWords" : []
+		"bannedWords" : [],
+		"autouser" : []
 	}
 }

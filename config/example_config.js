@@ -33,12 +33,25 @@ const defaultChannelConfig = {
 	autotranslate: false,
 	ignoreduser: [],
 	defaultLanguage: "jpn",
-	bannedWords: []
+	bannedWords: [],
+	autouser : []
 }
 
 //THIS IS FIXED IN THE CODE!! Only change this if you know what you are doing!!
 //It's for validating the user input for the !defaultlanguage command
 const supportedLanguages = ['eng','jpn']; 
+
+
+// mapping for the language codes
+// commandName is the command the user used. This is the key for the mapping
+// the value is the language code for the deepl API
+const languageMappings = {
+	'jp': 'JA',
+	'en': 'EN-US',
+	'円': 'EN-US',
+	'es': 'ES',
+	'fr': 'FR'
+};
 
 function loadChannelConfig() {
 	try {
@@ -67,4 +80,4 @@ function saveChannelConfig(channelconfig) {
 	}
 }
 
-module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig,defaultChannelConfig,supportedLanguages};
+module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, supportedLanguages, languageMappings};
