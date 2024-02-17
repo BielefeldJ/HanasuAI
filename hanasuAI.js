@@ -383,6 +383,7 @@ function onMessageHandler (target, user, msg, self)
 	// Create a new ChatMessage object
 	const chatMessage = new ChatMessage(msg, commandPrefixes);
 
+
 	//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
 	chatMessage.removeEmotes(user.emotes);
 	
@@ -440,7 +441,7 @@ function onMessageHandler (target, user, msg, self)
 		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
 			return;
 	
-		handelAutoTranslate(msg, target, recipient, channelname);		
+		handelAutoTranslate(chatMessage.getMessage(), target, recipient, channelname);		
 	}	
 }
 
