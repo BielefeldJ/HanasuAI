@@ -343,19 +343,8 @@ function userCommand(command, target, autotranslate)
 
 function translateCommand(command, target)
 {
-	//mapping for the language codes
-	// command.commandName is the command the user used. This is the key for the mapping
-	// the value is the language code for the deepl API
-	const languageMappings = {
-		'jp': 'JA',
-		'en': 'EN-US',
-		'円': 'EN-US',
-		'es': 'ES',
-		'fr': 'FR'
-	};
-
 	//get the language code for the command
-	const targetLanguage = languageMappings[command.commandName];
+	const targetLanguage = config.languageMappings[command.commandName];
 
 	if (targetLanguage && command.hasParameter) //translate the message to the target language
 	{
