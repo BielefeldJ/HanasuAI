@@ -33,7 +33,8 @@ const defaultChannelConfig = {
 	autotranslate: false,
 	ignoreduser: [],
 	defaultLanguage: "jpn",
-	bannedWords: []
+	bannedWords: [],
+	autouser : []
 }
 
 //THIS IS FIXED IN THE CODE!! Only change this if you know what you are doing!!
