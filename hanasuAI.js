@@ -78,8 +78,6 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 
 	Translator.translateToChat(target, recipient, msg, targetLanguage);
 	Stats.incrementCounter(target.substring(1), targetLanguage);
-
-	return;
 }
 
 function botownerCommand(command, target, channelname)
@@ -143,7 +141,7 @@ function botownerCommand(command, target, channelname)
 
 function broadcasterCommand(command, target, autotranslate, channelname)
 {
-	if(command.commandName === 'automode' && command.hasParameter)
+	if(command.commandName === 'automode' && command.hasParameter) //enable or disable auto translation for the channel
 	{
 		if(command.inputtext === 'off')
 		{ 	if(autotranslate)
@@ -172,7 +170,7 @@ function broadcasterCommand(command, target, autotranslate, channelname)
 		}
 		return;
 	}	
-	else if(command.commandName === 'defaultlanguage' && command.hasParameter)
+	else if(command.commandName === 'defaultlanguage' && command.hasParameter) //change the default language for the channel
 	{
 		if(config.supportedLanguages.includes(command.inputtext))
 		{
@@ -196,7 +194,7 @@ function modCommand(command, target, channelname)
 		client.say(target,`Hey, I am still here. Running since ${uptime}!`);	
 		return;		
 	}	
-	else if(command.commandName === 'ignoreuser' && command.hasParameter)
+	else if(command.commandName === 'ignoreuser' && command.hasParameter) //add or remove a user from the ignorelist
 	{
 		const userToIgnore = getUsernameFromInput(command.inputtext);
 
@@ -224,7 +222,7 @@ function modCommand(command, target, channelname)
 		config.saveChannelConfig(channelconfig);
 		return;
 	}
-	else if(command.commandName === "banword" && command.hasParameter)
+	else if(command.commandName === "banword" && command.hasParameter) //add or remove a word from the banned words list
 	{
 		const bannedWords = channelconfig[channelname].bannedWords;
 		const index = bannedWords.indexOf(command.inputtext);
@@ -244,7 +242,7 @@ function modCommand(command, target, channelname)
 		config.saveChannelConfig(channelconfig);
 		return;
 	}
-	else if(command.commandName === "autouser" && command.hasParameter)
+	else if(command.commandName === "autouser" && command.hasParameter) //add or remove a user from the auto translate list
 	{
 		const autoTranslateUser = getUsernameFromInput(command.inputtext);
 
@@ -413,8 +411,7 @@ function onMessageHandler (target, user, msg, self)
 	//check if user is allowed to use HanasuAI or not.
 	const blockedUser = channelconfig[channelname].ignoreduser.includes(user.username);	
 	if(blockedUser)
-		return;
-	
+		return;	
 
 	// Create a new ChatMessage object
 	const chatMessage = new ChatMessage(msg, commandPrefixes);
@@ -448,10 +445,9 @@ function onMessageHandler (target, user, msg, self)
 		}
 
 		//Used to check if a user is a mod or not
-		let isMod = user.mod || user['user-type'] === 'mod';
-		let isBroadcaster = target.slice(1) === user.username; //check if user broadcaster by comparing current channel with the username of the sender
-		let isModUp = isMod || isBroadcaster;
-		let isBotOwner = user.username === config.Botowner; //twitch username of the botowner	
+		const isBotOwner = user.username === config.Botowner; //twitch username of the botowner	
+		const isBroadcaster = target.slice(1) === user.username || isBotOwner; //check if user broadcaster by comparing current channel with the username of the sender
+		const isMod = user.mod || user['user-type'] === 'mod'|| isBroadcaster || isBotOwner; //check if user is a mod
 	
 		//commands only the Botowner can execute
 		if(isBotOwner)
@@ -459,12 +455,12 @@ function onMessageHandler (target, user, msg, self)
 			botownerCommand(command, target, channelname);
 		}
 		//commands streamer + botowner
-		if(isBroadcaster || isBotOwner)
+		if(isBroadcaster)
 		{
 			broadcasterCommand(command, target, autoTranslateChannel, channelname);
 		}
 		//commands mods and owner can execute
-		if(isModUp || isBotOwner)
+		if(isMod)
 		{
 			modCommand(command, target, channelname);
 		}
