@@ -440,7 +440,7 @@ function onMessageHandler (target, user, msg, self)
 		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
 			return;
 	
-		handelAutoTranslate(msg, target, recipient, channelname);		
+		handelAutoTranslate(chatMessage.getMessage(), target, recipient, channelname);		
 	}	
 }
 
