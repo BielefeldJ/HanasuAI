@@ -31,7 +31,7 @@ Translator.setBotowner = (botowner) => {
 //recipient = if someone taged a person before the command
 //inputtext = text to be translated
 //lang = target language
-Translator.translateToChat = (target, recipient, inputtext, lang) => {
+Translator.translateToChat = (target, recipient, inputtext, lang, italic) => {
 
 	//building request body
 	const translateBody = JSON.stringify({
@@ -47,9 +47,13 @@ Translator.translateToChat = (target, recipient, inputtext, lang) => {
 		if(translated.getstatusCode() === 200)
 		{
 			let chatmessage = translated.answer();
-			if(recipient)			
-				chatmessage = recipient + " " + chatmessage;			
-			Translator.client.say(target,chatmessage);
+		
+			//if a recipient was tagged, add the recipient to the message
+			if (recipient) 
+				chatmessage = `${recipient} ${chatmessage}`;			
+
+			const chatCommand = italic ? "/me " : "";
+			Translator.client.say(target, `${chatCommand}${chatmessage}`); //on twitch The /me command removes the colon after the name and italicizes the message.
 		}
 		else
 		{

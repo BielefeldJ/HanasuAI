@@ -77,7 +77,7 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 	if(detectLang !== "jpn" && !/[A-Za-z ]{5,}/.test(msg))
 		return;
 
-	Translator.translateToChat(target, recipient, msg, targetLanguage);
+	Translator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
 	Stats.incrementCounter(target.substring(1), targetLanguage);
 }
 
@@ -184,6 +184,13 @@ function broadcasterCommand(command, target, autotranslate, channelname)
 		else
 			client.say("Please provide a default language. (eng, jpn)");
 
+		return;
+	}
+	else if(command.commandName === "it") //toggle italic mode
+	{
+		channelconfig[channelname].italic = !channelconfig[channelname].italic;
+		config.saveChannelConfig(channelconfig);
+		client.say(target, `Using /me is now ${channelconfig[channelname].italic ? "enabled" : "disabled"}.`);
 		return;
 	}
 }
@@ -350,7 +357,7 @@ function translateCommand(command, target, channelname)
 	{
 		try 
 		{
-			Translator.translateToChat(target, command.recipient, command.inputtext,targetLanguage);
+			Translator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, channelconfig[channelname].italic);
 			Stats.incrementCounter(target.substring(1), targetLanguage);			
 		} catch (error) 
 		{

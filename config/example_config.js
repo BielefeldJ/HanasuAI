@@ -34,7 +34,8 @@ const defaultChannelConfig = {
 	ignoreduser: [],
 	defaultLanguage: "jpn",
 	bannedWords: [],
-	autouser : []
+	autouser : [],
+	italic : false
 }
 
 //THIS IS FIXED IN THE CODE!! Only change this if you know what you are doing!!
