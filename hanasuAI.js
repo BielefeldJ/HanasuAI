@@ -142,7 +142,7 @@ function botownerCommand(command, target, channelname)
 }
 
 //function to handle broadcaster commands
-function broadcasterCommand(command, target, autotranslate, channelname)
+function broadcasterCommand(command, target, channelname)
 {
 	if (command.commandName === 'automode') 
 	{
@@ -268,12 +268,12 @@ function modCommand(command, target, channelname)
 	}
 }
 
-function userCommand(command, target, autotranslate, channelname)
+function userCommand(command, target, channelname)
 {
 	if(command.commandName === 'infoen')
 	{
 		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! ";
-		if(!autotranslate)
+		if(!channelconfig[channelname].autotranslate)
 			infoMsg = infoMsg + "Just type !jp for Japanese translation or !en for English translation. I will automatically detect your input language.";
 		else
 			infoMsg = infoMsg + "Currently I'm running in auto-translate mode.";
@@ -288,7 +288,7 @@ function userCommand(command, target, autotranslate, channelname)
 	else if (command.commandName === 'infojp')
 	{
 		let infoMsg = "やあ！私の名前は HanasuAI (話すエーアイ)です。";						
-		if(!autotranslate)
+		if(!channelconfig[channelname].autotranslate)
 			infoMsg = infoMsg + "あなたのためにメッセージを翻訳することができます。日本語の翻訳には「!jp」、英語の翻訳には「!en」と入力してください。入力された言語を自動的に検出します。";		
 		else
 			infoMsg = infoMsg + "現在、自動翻訳モードで動作しています。";	
@@ -414,11 +414,11 @@ function onMessageHandler (target, user, msg, self)
 			case isBotOwner:
 				botownerCommand(command, target, channelname);
 			case isBroadcaster:
-				broadcasterCommand(command, target, autoTranslateChannel, channelname);
+				broadcasterCommand(command, target, channelname);
 			case isMod:	
 				modCommand(command, target, channelname);
 			default:
-				userCommand(command, target, autoTranslateChannel, channelname);
+				userCommand(command, target, channelname);
 				translateCommand(command, target, channelname);
 		}		
 	}	
