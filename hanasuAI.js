@@ -277,7 +277,7 @@ function modCommand(command, target, channelname)
 	}
 }
 
-function userCommand(command, target, autotranslate)
+function userCommand(command, target, autotranslate, channelname)
 {
 	if(command.commandName === 'infoen')
 	{
@@ -311,15 +311,15 @@ function userCommand(command, target, autotranslate)
 	}
 	else if(command.commandName === 'stats')
 	{		
-		Stats.getChannelStats(target.substring(1), channelstats => {
+		Stats.getChannelStats(channelname, channelstats => {
 			client.say(target, `This month I translated ${channelstats.toJP}x to Japanese 🇯🇵 and ${channelstats.toEN} times to English 🇺🇸 for ${target.substring(1)}.`);
 		});
 		return;
 	}
 	else if (command.commandName === 'jstats')
 	{
-		Stats.getChannelStats(target.substring(1), channelstats => {
-			client.say(target, `今月は、${target.substring(1)} の日本語🇯🇵に${channelstats.toJP}回、英語🇺🇸に${channelstats.toEN}回翻訳しました。`);
+		Stats.getChannelStats(channelname, channelstats => {
+			client.say(target, `今月は、${channelname} の日本語🇯🇵に${channelstats.toJP}回、英語🇺🇸に${channelstats.toEN}回翻訳しました。`);
 		});
 		return;
 	}
@@ -341,7 +341,7 @@ function userCommand(command, target, autotranslate)
 	}
 }
 
-function translateCommand(command, target)
+function translateCommand(command, target, channelname)
 {
 	//get the language code for the command
 	const targetLanguage = config.languageMappings[command.commandName];
@@ -427,8 +427,8 @@ function onMessageHandler (target, user, msg, self)
 			case isMod:	
 				modCommand(command, target, channelname);
 			default:
-				userCommand(command, target, autoTranslateChannel);
-				translateCommand(command, target);
+				userCommand(command, target, autoTranslateChannel, channelname);
+				translateCommand(command, target, channelname);
 		}		
 	}	
 	else
