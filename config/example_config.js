@@ -54,12 +54,13 @@ const languageMappings = {
 	'fr': 'FR'
 };
 
+//function to load the channelconfig from file also updates the config entries if new entries are added to the defaultChannelConfig
 function loadChannelConfig() {
 	try {
 		const data = fs.readFileSync(ChannelConfigFile, 'utf8');
 		const channelconfig = JSON.parse(data);
 		tmiconf.channels = Object.keys(channelconfig); //set all channels from config file to tmijs
-		return channelconfig;
+		return checkChannelConfig(channelconfig);
 	} catch (err) {
 		//save default config to file
 		const defaultConfig = {
@@ -72,6 +73,7 @@ function loadChannelConfig() {
 	}
 }
 
+//function to save the channelconfig to file
 function saveChannelConfig(channelconfig) {
 	try {
 		fs.writeFileSync(ChannelConfigFile, JSON.stringify(channelconfig));
@@ -79,6 +81,23 @@ function saveChannelConfig(channelconfig) {
 	} catch (err) {
 		return false;
 	}
+}
+
+//function to iterate over the channelconfig and check for missing entries from defaultChannelConfig
+function checkChannelConfig(channelconfig)
+{
+	let needSave = false;
+	Object.keys(channelconfig).forEach((channel) => {
+		for (const key in defaultChannelConfig) {
+			if (!channelconfig[channel].hasOwnProperty(key)) {
+				channelconfig[channel][key] = defaultChannelConfig[key];
+				needSave = true;
+			}
+		}
+	});
+	if(needSave)
+		saveChannelConfig(channelconfig);
+	return channelconfig;
 }
 
 module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, supportedLanguages, languageMappings};
