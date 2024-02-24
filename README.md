@@ -22,6 +22,20 @@ Install Docker
 Commands List
 -------------
 
+### Supported Languages ###
+Set supportet languages in the `config.js` file. 
+Edit the `languageMappings` Object.
+The key is the command that HanasuAI understands.
+The value is the language code for the deepl API.
+
+Example: 
+```js 
+const languageMappings = {
+	'jp': 'JA',
+}; 
+```
+The Command for the Twitch chat would be !jp for translation into JA (Japanese).
+
 ### User ###
 
 Command | Cescription | Usage
@@ -32,9 +46,6 @@ Command | Cescription | Usage
 `!jstatsg` | Send the number of translations across all channel in Japanese | `!jstatsg`
 `!infoen` | shows a "how to use" message in English | `!infoen`
 `!infojp` | shows a "how to use" message in Japanese | `!infojp`
-`!jp` | translate a text into Japanese | `!jp <text>`
-`!en` | translate a text into English | `!en <text>`
-
 
 ### Mods ###
 Command | Description | Usage
@@ -42,12 +53,14 @@ Command | Description | Usage
 `!hanasu` | A command to check if the bot is running + shows uptime | `!hanasu`
 `!ignoreuser` | adds or removes a user from the ignore list. The user can't use the bot anymore. | `!ignoreuser <username>`  
 `!banword` | adds or removes a word that will not be translated anymore | `!banword <word>`
+`!autouser` | enabled autotranslation for that user | `!autouser <name>`
 
 ### Streamer ###
 Command | Description | Usage
 ----------------|--------------|-------
-`!automode` | enables or disables the auto-translation feature | `!automode on\|off`
+`!automode` | enables or disables the auto-translation feature | `!automode`
 `!defaultlanguage` | changes the language autotranslate will translate into | `!defaultlanguage eng` 
+`!it` | enables or disables the use of the /me command on twitch | `!automode`
 
 ### Botowner ###
 Command | Description | Usage
