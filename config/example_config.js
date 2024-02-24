@@ -44,8 +44,8 @@ const supportedLanguages = ['eng','jpn'];
 
 
 // mapping for the language codes
-// commandName is the command the user used. This is the key for the mapping
-// the value is the language code for the deepl API
+// key is the command that HanasuAI understands
+// value is the language code for the deepl API
 const languageMappings = {
 	'jp': 'JA',
 	'en': 'EN-US',
