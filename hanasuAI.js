@@ -398,7 +398,7 @@ function onMessageHandler (target, user, msg, self)
 		//prevent command injection!	
 		if(['!', '/'].includes(command.inputtext.charAt(0)))
 		{
-			logger.log(`INFO: Command injection found! ${username} tryed to use ${command.inputtext}!`);
+			logger.log(`INFO: Command injection found! ${user.username} tryed to use ${command.inputtext}!`);
 			return;			
 		}
 
