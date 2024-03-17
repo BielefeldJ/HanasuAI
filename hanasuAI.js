@@ -144,20 +144,7 @@ function botownerCommand(command, target, channelname)
 //function to handle broadcaster commands
 function broadcasterCommand(command, target, channelname)
 {
-	if (command.commandName === 'automode') 
-	{
-		channelconfig[channelname].autotranslate = !channelconfig[channelname].autotranslate;
-		config.saveChannelConfig(channelconfig);
-		
-		const autoTranslationEnabled = channelconfig[channelname].autotranslate;
-		const message = autoTranslationEnabled ? "Enabled auto-translation! | オートトランスレーションを有効にしました" : "Disabled auto-translation! | オートトランスレーションの無効化";
-
-		client.say(target, message);
-		logger.log(`AUTOMODE INFO: ${autoTranslationEnabled ? "Enabled" : "Disabled"} auto-translation for ${target}`);
-		
-		return;
-	}
-	else if(command.commandName === 'defaultlanguage' && command.hasParameter) //change the default language for the channel
+	if(command.commandName === 'defaultlanguage' && command.hasParameter) //change the default language for the channel
 	{
 		if(config.supportedLanguages.includes(command.inputtext))
 		{
@@ -189,6 +176,19 @@ function modCommand(command, target, channelname)
 		client.say(target,`Hey, I am still here. Running since ${uptime}!`);	
 		return;		
 	}	
+	else if (command.commandName === 'automode') 
+	{
+		channelconfig[channelname].autotranslate = !channelconfig[channelname].autotranslate;
+		config.saveChannelConfig(channelconfig);
+		
+		const autoTranslationEnabled = channelconfig[channelname].autotranslate;
+		const message = autoTranslationEnabled ? "Enabled auto-translation! | オートトランスレーションを有効にしました" : "Disabled auto-translation! | オートトランスレーションの無効化";
+
+		client.say(target, message);
+		logger.log(`AUTOMODE INFO: ${autoTranslationEnabled ? "Enabled" : "Disabled"} auto-translation for ${target}`);
+		
+		return;
+	}
 	else if(command.commandName === 'ignoreuser' && command.hasParameter) //add or remove a user from the ignorelist
 	{
 		const userToIgnore = getUsernameFromInput(command.inputtext);

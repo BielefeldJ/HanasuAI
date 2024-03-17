@@ -54,11 +54,11 @@ Command | Description | Usage
 `!ignoreuser` | adds or removes a user from the ignore list. The user can't use the bot anymore. | `!ignoreuser <username>`  
 `!banword` | adds or removes a word that will not be translated anymore | `!banword <word>`
 `!autouser` | enabled autotranslation for that user | `!autouser <name>`
+`!automode` | enables or disables the auto-translation feature | `!automode`
 
 ### Streamer ###
 Command | Description | Usage
 ----------------|--------------|-------
-`!automode` | enables or disables the auto-translation feature | `!automode`
 `!defaultlanguage` | changes the language autotranslate will translate into | `!defaultlanguage eng` 
 `!it` | enables or disables the use of the /me command on twitch | `!automode`
 
