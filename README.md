@@ -53,14 +53,14 @@ Command | Description | Usage
 `!hanasu` | A command to check if the bot is running + shows uptime | `!hanasu`
 `!ignoreuser` | adds or removes a user from the ignore list. The user can't use the bot anymore. | `!ignoreuser <username>`  
 `!banword` | adds or removes a word that will not be translated anymore | `!banword <word>`
-`!autouser` | enabled autotranslation for that user | `!autouser <name>`
+`!autouser` | enabled autotranslation for a specific user | `!autouser <name>`
 `!automode` | enables or disables the auto-translation feature | `!automode`
 
 ### Streamer ###
 Command | Description | Usage
 ----------------|--------------|-------
 `!defaultlanguage` | changes the language autotranslate will translate into | `!defaultlanguage eng` 
-`!it` | enables or disables the use of the /me command on twitch | `!automode`
+`!it` | enables or disables the use of the /me command on twitch | `!it`
 
 ### Botowner ###
 Command | Description | Usage
