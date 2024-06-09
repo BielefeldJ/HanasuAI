@@ -60,16 +60,8 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 	const detectLang = franc(msgWithoutLocalNames, { minLength: 5 });
 	const defaultLanguage = channelconfig[channelname].defaultLanguage;
 	
-	//language Mapping.
-	// If the default language is eng and the detected language is eng as well -> translate to Japanes. If not -> english
-	//mapping if the following formalt:  ISO 639-3 ? deepl language code : deepl language code
-	//as franc uses ISO 639-3 and deepl has it's own language codes
-	const languageMappings = {
-		eng: { targetLanguage: detectLang === "eng" ? "JA" : "EN-US" },
-		jpn: { targetLanguage: detectLang === "jpn" ? "EN-US" : "JA" },
-	};
-	
-	const { targetLanguage } = languageMappings[defaultLanguage];
+	//choose the correct target language 
+	const { targetLanguage } = config.autoTranslateLanguageMappings[defaultLanguage];
 	
 	//check if the english message has at least 5 character.
 	//This way I can ignore most messages like "hehe" "xD" or something like this. No need to translate them.
@@ -146,7 +138,7 @@ function broadcasterCommand(command, target, channelname)
 {
 	if(command.commandName === 'defaultlanguage' && command.hasParameter) //change the default language for the channel
 	{
-		if(config.supportedLanguages.includes(command.inputtext))
+		if(config.autoTranslateLanguageMappings.hasOwnProperty(command.inputtext))
 		{
 			client.say(target,`Changed default language to ${command.inputtext}`);
 			channelconfig[channelname].defaultLanguage = command.inputtext;
@@ -335,7 +327,7 @@ function userCommand(command, target, channelname)
 function translateCommand(command, target, channelname)
 {
 	//get the language code for the command
-	const targetLanguage = config.languageMappings[command.commandName];
+	const targetLanguage = config.commandLanguageMappings[command.commandName];
 
 	if (targetLanguage && command.hasParameter) //translate the message to the target language
 	{
@@ -437,18 +429,18 @@ function onMessageHandler (target, user, msg, self)
 
 //function for formating time.
 String.prototype.toHHMMSS = function () {
-    var sec_num = parseInt(this, 10);
+	var sec_num = parseInt(this, 10);
 	var days 	= Math.floor(sec_num / 86400);
-    var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
-    var minutes = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
-    var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
+	var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
+	var minutes = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
+	var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
 
 	if (days 	< 10) {days    = "0"+days;}
-    if (hours   < 10) {hours   = "0"+hours;}
-    if (minutes < 10) {minutes = "0"+minutes;}
-    if (seconds < 10) {seconds = "0"+seconds;}
-    var time    = days + ' days, ' + hours + ' hours, ' + minutes + ' minutes and ' + seconds + ' seconds';
-    return time;
+	if (hours   < 10) {hours   = "0"+hours;}
+	if (minutes < 10) {minutes = "0"+minutes;}
+	if (seconds < 10) {seconds = "0"+seconds;}
+	var time    = days + ' days, ' + hours + ' hours, ' + minutes + ' minutes and ' + seconds + ' seconds';
+	return time;
 }
 
 // Called every time the bot connects to Twitch chat

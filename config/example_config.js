@@ -38,15 +38,19 @@ const defaultChannelConfig = {
 	italic : false
 }
 
-//THIS IS FIXED IN THE CODE!! Only change this if you know what you are doing!!
-//It's for validating the user input for the !defaultlanguage command
-const supportedLanguages = ['eng','jpn']; 
-
+//language Mapping.
+// If the default language is eng and the detected language is eng as well -> translate to Japanes. If not -> english
+//mapping if the following formalt:  ISO 639-3 ? deepl language code : deepl language code
+//as franc uses ISO 639-3 and deepl has it's own language codes
+const autoTranslateLanguageMappings = {
+	eng: (detectLang) => detectLang === "eng" ? "JA" : "EN-US",
+	jpn: (detectLang) => detectLang === "jpn" ? "EN-US" : "JA",
+};
 
 // mapping for the language codes
 // key is the command that HanasuAI understands
 // value is the language code for the deepl API
-const languageMappings = {
+const commandLanguageMappings = {
 	'jp': 'JA',
 	'en': 'EN-US',
 	'円': 'EN-US',
@@ -100,4 +104,4 @@ function checkChannelConfig(channelconfig)
 	return channelconfig;
 }
 
-module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, supportedLanguages, languageMappings};
+module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, autoTranslateLanguageMappings, commandLanguageMappings};
