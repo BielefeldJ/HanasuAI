@@ -61,7 +61,7 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 	const defaultLanguage = channelconfig[channelname].defaultLanguage;
 	
 	//choose the correct target language 
-	const { targetLanguage } = config.autoTranslateLanguageMappings[defaultLanguage];
+	const targetLanguage = config.autoTranslateLanguageMappings[defaultLanguage](detectLang);
 	
 	//check if the english message has at least 5 character.
 	//This way I can ignore most messages like "hehe" "xD" or something like this. No need to translate them.
@@ -136,16 +136,16 @@ function botownerCommand(command, target, channelname)
 //function to handle broadcaster commands
 function broadcasterCommand(command, target, channelname)
 {
-	if(command.commandName === 'defaultlanguage' && command.hasParameter) //change the default language for the channel
+	if(command.commandName === 'defaultlanguage') //change the default language for the channel
 	{
-		if(config.autoTranslateLanguageMappings.hasOwnProperty(command.inputtext))
+		if(command.hasParameter && config.autoTranslateLanguageMappings.hasOwnProperty(command.inputtext))
 		{
 			client.say(target,`Changed default language to ${command.inputtext}`);
 			channelconfig[channelname].defaultLanguage = command.inputtext;
 			config.saveChannelConfig(channelconfig);
 		}
-		else
-			client.say("Please provide a default language. (eng, jpn)");
+		else		
+			client.say(target, `Please provide a default language. (${Object.keys(config.autoTranslateLanguageMappings).join(", ")})`);		
 
 		return;
 	}
