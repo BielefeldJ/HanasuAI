@@ -11,7 +11,7 @@ const tmiconf = {
 };
 
 //Config for deepl
-const deeplconfig = {
+const DeeplConfig = {
 	apikey: 'APIKEY', // Key for the deepl API
 	serviceUrl: 'https://api-free.deepl.com/v2/' //URL of the deepl.com API (free tier)
 	//serviceUrl: 'https://api.deepl.com/v2/'  //for deepl pro
