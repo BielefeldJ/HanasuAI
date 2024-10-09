@@ -7,6 +7,9 @@ const {logger} = require('./logger.js');
 //Init translator
 var Translator = {};
 
+//timeout to prevent spamming of error messages
+Translator.errorTimeout = false;
+
 //set twitch chat client
 Translator.setClient = (client) => {
 	Translator.client = client;
@@ -56,10 +59,16 @@ Translator.translateToChat = (target, recipient, inputtext, lang, italic) => {
 			Translator.client.say(target, `${chatCommand}${chatmessage}`); //on twitch The /me command removes the colon after the name and italicizes the message.
 		}
 		else
-		{
+		{			
 			let errmsg = `Translate request Failed. Error Code: ${translated.getstatusCode()}`;
 			//send error message to chat
-			Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);
+			if(!Translator.errorTimeout)
+			{
+				Translator.errorTimeout = true;
+				Translator.client.say(target, `${errmsg} Please send this message to @${Translator.botowner}.`);
+				setTimeout(() => { Translator.errorTimeout = false; }, 20000);
+			}
+				
 			logger.error(errmsg);
 		}
 	});
