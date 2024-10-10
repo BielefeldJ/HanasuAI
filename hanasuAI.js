@@ -266,7 +266,7 @@ function userCommand(command, target, channelname)
 	{
 		let infoMsg = "Hey, my name is HanasuAI. I can translate messages for you! ";
 		if(!channelconfig[channelname].autotranslate)
-			infoMsg = infoMsg + "Just type !jp for Japanese translation or !en for English translation. I will automatically detect your input language.";
+			infoMsg = infoMsg + "Just type !jp for Japanese translation or !en for English translation. I will automatically detect your input language. For more languages: !language";
 		else
 			infoMsg = infoMsg + "Currently I'm running in auto-translate mode.";
 		if(command.recipient)
@@ -290,6 +290,11 @@ function userCommand(command, target, channelname)
 			infoMsg = command.inputtext + " " + infoMsg;
 
 		client.say(target, infoMsg);
+		return;
+	}
+	else if(command.commandName === 'language')
+	{
+		client.say(target, "I can translate to Japanese 🇯🇵, English 🇺🇸, Spanish 🇪🇸, French 🇫🇷 and German 🇩🇪. Just type !jp, !en, !es, !fr or !de before your message.");
 		return;
 	}
 	else if(command.commandName === 'stats')
