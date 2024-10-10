@@ -46,6 +46,7 @@ Command | Cescription | Usage
 `!jstatsg` | Send the number of translations across all channel in Japanese | `!jstatsg`
 `!infoen` | shows a "how to use" message in English | `!infoen`
 `!infojp` | shows a "how to use" message in Japanese | `!infojp`
+`!language` | shows a list of supported languages | `!language`
 
 ### Mods ###
 Command | Description | Usage
