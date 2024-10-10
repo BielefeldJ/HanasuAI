@@ -47,7 +47,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang, italic) => {
 	});
 
 	Translator.sendAPIRequest("POST", "translate", translateBody, translated => {
-		if(translated.getstatusCode() === 456)
+		if(translated.getstatusCode() === 200)
 		{
 			let chatmessage = translated.answer();
 		
@@ -58,7 +58,7 @@ Translator.translateToChat = (target, recipient, inputtext, lang, italic) => {
 			const chatCommand = italic ? "/me " : "";
 			Translator.client.say(target, `${chatCommand}${chatmessage}`); //on twitch The /me command removes the colon after the name and italicizes the message.
 		}
-		else if(translated.getstatusCode() === 200) //HTTP 456: quota exceeded
+		else if(translated.getstatusCode() === 456) //HTTP 456: quota exceeded
 		{
 			let errmsg = `I reached my Cost Control limit. I am not allowed translate anymore 😢. At least untill the reset (7th of every month) or if @${Translator.botowner} increases my limit... I am sorry 🙇‍♀️`;
 			//send error message to chat
