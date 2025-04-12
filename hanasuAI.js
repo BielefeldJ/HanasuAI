@@ -19,6 +19,7 @@ const proc = require('process');
 const Translator = require('./modules/translator.js');
 const Stats = require('./modules/stats.js');
 const ChatMessage = require('./modules/chatmessage.js');
+const { checkSecretPhrase, getMidMentionReply } = require('./modules/easterEggs.js');
 //some ugly hackery stuff to get the import working.. idk a better way yet.
 var franc
 (async () => {
@@ -41,6 +42,16 @@ Translator.setAPIConfig(config.DeeplConfig);
 Translator.setBotowner(config.Botowner);
 
 const commandPrefixes = ['!', '！']; //command prefixes for the bot
+
+// mention cooldown stuff
+const mentionCooldowns = new Map(); // key: channel name, value: timestamp
+const MENTION_COOLDOWN_MS = 10000; // 10 seconds cooldown
+// function to check if hanasuai was tagged in the middle of a message
+function wasTaggedMidMessage(message) 
+{
+	const words = message.toLowerCase().split(/\s+/);
+	return words.length > 1 && words.slice(1).some(word => word.includes('hanasuai'));
+}
 
 //function to handle auto translation
 function handelAutoTranslate(msg, target, recipient, channelname)
@@ -421,6 +432,23 @@ function onMessageHandler (target, user, msg, self)
 	}	
 	else
 	{
+		const message = chatMessage.getMessage();
+		const easter = checkSecretPhrase(message);
+		if (easter)
+			client.say(target, `@${user.username} ${easter}`);
+
+		if (wasTaggedMidMessage(message)) 
+		{
+			const now = Date.now();
+			const lastMention = mentionCooldowns.get(target) || 0;
+		
+			if (now - lastMention > MENTION_COOLDOWN_MS) 
+			{
+				mentionCooldowns.set(target, now);		
+				client.say(target, `@${user.username} ${getMidMentionReply()}`);
+			}
+		}
+
 		if(!canAutoTranslate)
 			return;
 
@@ -428,7 +456,7 @@ function onMessageHandler (target, user, msg, self)
 		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
 			return;
 	
-		handelAutoTranslate(chatMessage.getMessage(), target, recipient, channelname);		
+		handelAutoTranslate(message, target, recipient, channelname);		
 	}	
 }
 
