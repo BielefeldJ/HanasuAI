@@ -19,7 +19,7 @@ function checkSecretPhrase(message)
 	const normalized = message.toLowerCase().trim();
 	for (const phrase in secretPhrases) 
 	{
-		if (normalized.includes(phrase))
+		if (RegExp(`\\b${phrase}\\b`).test(normalized))
 			return secretPhrases[phrase];
 	}
 	return null;
