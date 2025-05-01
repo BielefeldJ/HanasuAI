@@ -4,7 +4,7 @@ const secretPhrases = {
 		probability: 1.0 
 	},
 	"ping": { 
-		responses: [".... . .-.. .-.. --- / .-- --- .-. .-.. -.. (Morse: Hello world)", "Pong!"], 
+		responses: [".--. --- -. --. (Pong but in morse :P)", "Pong!"], 
 		probability: 1.0 
 	},
 	"i'm sad": { 
@@ -44,12 +44,36 @@ const midMentionReplies = [
 	"Did you say something? I was busy being awesome.",
 	"Did you just call me? I’m flattered! 💖",
 	"Did you need something? I’m all ears! 👂",
-	"Did you just summon me? I’m here to translate! ✨"
+	"Did you just summon me? I’m here to translate! ✨",
+	"So this is how it feels to be mentiont... Interesting.",
 ];
 			  
 function getMidMentionReply() {
 	const i = Math.floor(Math.random() * midMentionReplies.length);
 	return midMentionReplies[i];
 }
+
+const userGreetings = {
+	profbielefeld: ["Hey Prof <3", "There he is, my favorite creator ♥"],
+	tuinkabouter1965: ["Hey Tuinkabouter! <3", "Oh welcome, Tuinkabouter! ♥"],
+};
   
-module.exports = {checkSecretPhrase, getMidMentionReply};
+const greetedToday = new Map(); // Format: { user: 'YYYY-MM-DD' }
+  
+function greetUser(user) 
+{
+	const greetings = userGreetings[user];
+	if (!greetings)
+		return null;
+
+	const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+	const lastGreeted = greetedToday.get(user);
+  
+	if (lastGreeted === today)
+		return;
+  
+	greetedToday.set(user, today);
+	return greetings[Math.floor(Math.random() * greetings.length)];  
+}
+  
+module.exports = {checkSecretPhrase, getMidMentionReply, greetUser};

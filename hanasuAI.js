@@ -19,7 +19,7 @@ const proc = require('process');
 const Translator = require('./modules/translator.js');
 const Stats = require('./modules/stats.js');
 const ChatMessage = require('./modules/chatmessage.js');
-const { checkSecretPhrase, getMidMentionReply } = require('./modules/easterEggs.js');
+const { checkSecretPhrase, getMidMentionReply, greetUser } = require('./modules/easterEggs.js');
 //some ugly hackery stuff to get the import working.. idk a better way yet.
 var franc
 (async () => {
@@ -432,6 +432,10 @@ function onMessageHandler (target, user, msg, self)
 	}	
 	else
 	{
+		const greeting = greetUser(user.username);
+		if (greeting)
+			client.say(target, `@${user.username} ${greeting}`);
+
 		const message = chatMessage.getMessage();
 		const easter = checkSecretPhrase(message);
 		if (easter)
