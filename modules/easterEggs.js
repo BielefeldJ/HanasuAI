@@ -1,7 +1,16 @@
 const secretPhrases = {
-    "it's over 9000": { response: "My language circuits are... OVER 9000!!", probability: 1.0 },
-    "ping": { response: ".... . .-.. .-.. --- / .-- --- .-. .-.. -.. (Morse: Hello world)", probability: 1.0 },
-    "i'm sad": { response: "Sending virtual hugs across all languages. 💖", probability: 1.0 }
+    "it's over 9000": { 
+        responses: ["My language circuits are... OVER 9000!!", "Power levels are off the charts!"], 
+        probability: 1.0 
+    },
+    "ping": { 
+        responses: [".... . .-.. .-.. --- / .-- --- .-. .-.. -.. (Morse: Hello world)", "Pong!"], 
+        probability: 1.0 
+    },
+    "i'm sad": { 
+        responses: ["Sending virtual hugs across all languages. 💖", "Cheer up! You're amazing! 🌟"], 
+        probability: 1.0 
+    }
 };
 
 const midMentionReplies = [
@@ -19,9 +28,10 @@ function checkSecretPhrase(message)
     for (const phrase in secretPhrases) 
     {
         if (RegExp(`\\b${phrase}\\b`).test(normalized)) {
-            const { response, probability } = secretPhrases[phrase];
+            const { responses, probability } = secretPhrases[phrase];
             if (Math.random() < probability) {
-                return response;
+                const randomIndex = Math.floor(Math.random() * responses.length);
+                return responses[randomIndex];
             }
         }
     }
