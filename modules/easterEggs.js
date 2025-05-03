@@ -11,9 +11,9 @@ const secretPhrases = {
 		responses: ["Sending virtual hugs across all languages. 💖", "Cheer up! You're amazing! 🌟"], 
 		probability: 1.0 
 	},
-	"I wasn't able to identify the song": {
+	"wasn't able to identify the song": {
 		responses: ["I’m not a music expert, but I can still dance! 💃", "Maybe it’s a secret song? 🤫", "You need a drink?"],
-		probability: 0.2
+		probability: 0.1
 	}
 };
 
