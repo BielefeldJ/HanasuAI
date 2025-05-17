@@ -1,0 +1,20 @@
+{
+	"secretPhrases": {
+		"example phrase 1": {
+			"responses": ["Example response 1", "Example response 2"],
+			"probability": 1.0
+		},
+		"example phrase 2": {
+			"responses": ["Another example response"],
+			"probability": 0.5
+		}
+	},
+	"midMentionReplies": [
+		"Example mention reply 1",
+		"Example mention reply 2"
+	],
+	"userGreetings": {
+		"exampleuser1": ["Hello, exampleuser1!", "Welcome, exampleuser1!"],
+		"exampleuser2": ["Hi there, exampleuser2!"]
+	}
+}

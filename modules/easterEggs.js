@@ -1,30 +1,45 @@
-const secretPhrases = {
-	"it's over 9000": { 
-		responses: ["My language circuits are... OVER 9000!!", "Power levels are off the charts!"], 
-		probability: 1.0 
-	},
-	"ping": { 
-		responses: [".--. --- -. --. (Pong but in morse :P)", "Pong!"], 
-		probability: 1.0 
-	},
-	"i'm sad": { 
-		responses: ["Sending virtual hugs across all languages. 💖", "Cheer up! You're amazing! 🌟"], 
-		probability: 1.0 
-	},
-	"wasn't able to identify the song": {
-		responses: ["I’m not a music expert, but I can still dance! 💃", "Maybe it’s a secret song? 🤫", "You need a drink?"],
-		probability: 0.1
+const fs = require('fs');
+const path = require('path');
+const {logger} = require('./logger.js');
+
+// Update the configPath to point to the config folder
+const configPath = path.join(__dirname, '..', 'config', 'eastereggsconfig.json');
+let config = {};
+
+// Load config at startup
+function loadConfig() 
+{
+	try 
+	{
+		const raw = fs.readFileSync(configPath, 'utf-8');
+		config = JSON.parse(raw);
+		if (!config.secretPhrases || !config.midMentionReplies || !config.userGreetings) 
+		{
+			throw new Error('Invalid config structure');
+		}
+		logger.log('EASTEREGG INFO: Loaded eastereggsconfig.json');
+	} catch (e) 
+	{
+		logger.error('EASTEREGG ERR: Failed to load eastereggsconfig.json:', e);
+		config = { secretPhrases: {}, midMentionReplies: [], userGreetings: {} };
 	}
-};
+}
+loadConfig();
+
+function escapeRegex(str) 
+{
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 function checkSecretPhrase(message) 
 {
 	const normalized = message.toLowerCase().trim();
-	for (const phrase in secretPhrases) 
+	for (const phrase in config.secretPhrases) 
 	{
-		if (RegExp(`\\b${phrase}\\b`).test(normalized)) 
+		const regex = new RegExp(`\\b${escapeRegex(phrase)}\\b`);
+		if (regex.test(normalized)) 
 		{
-			const { responses, probability } = secretPhrases[phrase];
+			const { responses, probability } = config.secretPhrases[phrase];
 			if (Math.random() < probability) 
 			{
 				const randomIndex = Math.floor(Math.random() * responses.length);
@@ -34,46 +49,33 @@ function checkSecretPhrase(message)
 	}
 	return null;
 }
-			
-const midMentionReplies = [
-	"Heeey! You talking to me? :3",
-	"I'm always listening... 👀",
-	"You rang, hooman? 😏",
-	"Did someone whisper my name? 😏",
-	"Hmph. I *guess* I’ll respond since you asked nicely.",
-	"Did you say something? I was busy being awesome.",
-	"Did you just call me? I’m flattered! 💖",
-	"Did you need something? I’m all ears! 👂",
-	"Did you just summon me? I’m here to translate! ✨",
-	"So this is how it feels to be mentiont... Interesting.",
-];
-			  
-function getMidMentionReply() {
-	const i = Math.floor(Math.random() * midMentionReplies.length);
-	return midMentionReplies[i];
+
+function getMidMentionReply() 
+{
+	const replies = config.midMentionReplies || [];
+	if (replies.length === 0) 
+		return null;
+
+	const i = Math.floor(Math.random() * replies.length);
+	return replies[i];
 }
 
-const userGreetings = {
-	profbielefeld: ["Hey Prof <3", "There he is, my favorite creator ♥"],
-	tuinkabouter1965: ["Hey Tuinkabouter! <3", "Oh welcome, Tuinkabouter! ♥"],
-};
-  
 const greetedToday = new Map(); // Format: { user: 'YYYY-MM-DD' }
-  
+
 function greetUser(user) 
 {
-	const greetings = userGreetings[user];
-	if (!greetings)
+	const greetings = (config.userGreetings || {})[user];
+	if (!greetings) 
 		return null;
 
 	const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 	const lastGreeted = greetedToday.get(user);
-  
-	if (lastGreeted === today)
+
+	if (lastGreeted === today) 
 		return;
-  
+
 	greetedToday.set(user, today);
-	return greetings[Math.floor(Math.random() * greetings.length)];  
+	return greetings[Math.floor(Math.random() * greetings.length)];
 }
-  
-module.exports = {checkSecretPhrase, getMidMentionReply, greetUser};
+
+module.exports = { checkSecretPhrase, getMidMentionReply, greetUser };
