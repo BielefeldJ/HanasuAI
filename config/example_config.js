@@ -20,6 +20,9 @@ const DeeplConfig = {
 //Twitch username of the Botowner
 const Botowner = "TWITCHUSERNAME";
 
+//Twitch username of the Bot
+const BotName = 'HanasuAI';
+
 //File name where the bot logs the statistics
 const StatisticsFile = "stats.json";
 //File name were the bot loads/saves channel specific settings from/to
@@ -104,4 +107,4 @@ function checkChannelConfig(channelconfig)
 	return channelconfig;
 }
 
-module.exports = {tmiconf, DeeplConfig, Botowner, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, autoTranslateLanguageMappings, commandLanguageMappings};
+module.exports = {tmiconf, DeeplConfig, Botowner, BotName, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, autoTranslateLanguageMappings, commandLanguageMappings};
