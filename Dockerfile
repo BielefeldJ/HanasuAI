@@ -1,7 +1,10 @@
-FROM node:21-alpine
+FROM node:23-alpine
 
 LABEL maintainer="BielefeldJ"
 LABEL description="HanasuAI Docker"
+
+ARG GIT_HASH=dev
+ENV HANASU_VERSION=$GIT_HASH
 
 WORKDIR /hanasuAI
 
