@@ -28,7 +28,7 @@ loadConfig();
 
 function escapeRegex(str) 
 {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function checkSecretPhrase(message) 
@@ -68,14 +68,23 @@ function greetUser(user)
 	if (!greetings) 
 		return null;
 
-	const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-	const lastGreeted = greetedToday.get(user);
-
-	if (lastGreeted === today) 
+	if (greetedToday.has(user)) 
 		return;
 
-	greetedToday.set(user, today);
+	greetedToday.set(user, new Date().toISOString().split('T')[0]);
 	return greetings[Math.floor(Math.random() * greetings.length)];
 }
+
+function cleanupGreetedToday() 
+{
+	const today = new Date().toISOString().split('T')[0];
+	for (const [user, date] of greetedToday.entries()) 
+	{	
+		if (date !== today) 
+			greetedToday.delete(user);
+	}
+}
+// Call cleanup once per hour
+setInterval(cleanupGreetedToday, 60 * 60 * 1000);
 
 module.exports = { checkSecretPhrase, getMidMentionReply, greetUser };
