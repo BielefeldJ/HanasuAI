@@ -113,3 +113,4 @@ test.js
 #ignore stats file
 stats/*.json
 config/easterggsconfig.json
+config/eastereggsconfig.json
