@@ -405,10 +405,11 @@ function onMessageHandler (target, user, msg, self)
 		const command = chatMessage.createCommand();
 
 		//prevent command injection!	
-		if(['!', '/'].includes(command.inputtext.charAt(0)))
+		const trimmedInput = command.inputtext.trim();
+		if (trimmedInput.startsWith('!') || trimmedInput.startsWith('/')) 
 		{
-			logger.log(`INFO: Command injection found! ${user.username} tryed to use ${command.inputtext}!`);
-			return;			
+			logger.log(`INFO: Command injection found! ${user.username} tried to use ${trimmedInput}!`);
+			return;
 		}
 
 		//Used to check if a user is a mod or not
