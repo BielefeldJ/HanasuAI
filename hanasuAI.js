@@ -203,20 +203,14 @@ function modCommand(command, target, channelname)
 			return;
 		}
 		const ignoredUsers = channelconfig[channelname].ignoreduser;
-		const index = ignoredUsers.indexOf(userToIgnore);
+		const added = toggleUserInList(ignoredUsers, userToIgnore);
 
-		if(index !== -1)
-		{
-			// Remove user from the ignoreduser array using splice
-			ignoredUsers.splice(index, 1);
-			client.say(target, `Removed user ${userToIgnore} from the ignorelist.`);
-			logger.log(`Removed user ${userToIgnore} from the ignore list for ${target}`);
-		}
-		else
-		{
-			ignoredUsers.push(userToIgnore);
+		if (added) {
 			client.say(target, `Added user ${userToIgnore} to the ignorelist.`);
 			logger.log(`Added user ${userToIgnore} to the ignore list for ${target}`);
+		} else {
+			client.say(target, `Removed user ${userToIgnore} from the ignorelist.`);
+			logger.log(`Removed user ${userToIgnore} from the ignore list for ${target}`);
 		}
 		config.saveChannelConfig(channelconfig);
 		return;
@@ -252,20 +246,14 @@ function modCommand(command, target, channelname)
 		}
 
 		const autotranslateUserList = channelconfig[channelname].autouser;
-		const index = autotranslateUserList.indexOf(autoTranslateUser);
+		const added = toggleUserInList(autotranslateUserList, autoTranslateUser);
 
-		if(index !== -1)
-		{
-			// Remove user from the ignoreduser array using splice
-			autotranslateUserList.splice(index, 1);
-			client.say(target, `Removed user ${autoTranslateUser} from the auto translation.`);
-			logger.log(`Removed user ${autoTranslateUser} from the auto translate list for ${target}`);
-		}
-		else
-		{
-			autotranslateUserList.push(autoTranslateUser);
+		if (added) {
 			client.say(target, `Added user ${autoTranslateUser} to the auto translation list.`);
 			logger.log(`Added user ${autoTranslateUser} to the auto translation list for ${target}`);
+		} else {
+			client.say(target, `Removed user ${autoTranslateUser} from the auto translation.`);
+			logger.log(`Removed user ${autoTranslateUser} from the auto translate list for ${target}`);
 		}
 		config.saveChannelConfig(channelconfig);
 		return;
@@ -507,4 +495,19 @@ function getUsernameFromInput(input)
 		return username;
 	else
 		return null;
+}
+
+function toggleUserInList(list, username) 
+{
+    const index = list.indexOf(username);
+    if (index !== -1) 
+	{
+        list.splice(index, 1);
+        return false;
+    } 
+	else 
+	{
+        list.push(username);
+        return true;
+    }
 }
