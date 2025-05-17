@@ -1,4 +1,5 @@
 const {logger} = require('./modules/logger.js');
+const proc = require('process');
 //HanasuAI can start now
 console.log("HanasuAI is starting..");
 
@@ -15,7 +16,6 @@ if(!channelconfig)
 
 //imports
 const tmi = require('tmi.js');
-const proc = require('process');
 const Translator = require('./modules/translator.js');
 const Stats = require('./modules/stats.js');
 const ChatMessage = require('./modules/chatmessage.js');
@@ -49,8 +49,9 @@ const MENTION_COOLDOWN_MS = 10000; // 10 seconds cooldown
 // function to check if hanasuai was tagged in the middle of a message
 function wasTaggedMidMessage(message) 
 {
-	const words = message.toLowerCase().split(/\s+/);
-	return words.length > 1 && words.slice(1).some(word => word.includes('hanasuai'));
+    const botName = config.BotName?.toLowerCase() || "hanasuai"; // fallback if not set
+    const words = message.toLowerCase().split(/\s+/);
+    return words.length > 1 && words.slice(1).some(word => word.includes(botName));
 }
 
 //function to handle auto translation
@@ -120,7 +121,7 @@ function botownerCommand(command, target, channelname)
 		}).catch((err) => 
 		{
 			client.say(target,`Could not join channel ${userToJoin}. Please check logs.`);
-			logger.log(`ERROR joining channel ${userToRemove}: ${err}`);
+			logger.log(`ERROR joining channel ${userToJoin}: ${err}`);
 		});
 		return;
 	}
