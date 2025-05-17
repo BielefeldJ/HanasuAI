@@ -1,8 +1,8 @@
 const {logger} = require('./modules/logger.js');
 const proc = require('process');
+const version = process.env.HANASU_VERSION || "dev";
 //HanasuAI can start now
-console.log("HanasuAI is starting..");
-
+console.log("HanasuAI v" + version + " is starting up...");
 
 //import config
 const config = require('./config/config.js');
@@ -141,6 +141,11 @@ function botownerCommand(command, target, channelname)
 			client.say(target,`Could not disconnect from channel ${userToRemove}. Please check logs.`);
 			logger.log(`ERROR disconnecting from channel ${userToRemove}: ${err}`);
 		});
+		return;
+	}
+	else if(command.commandName === "version") //get the current version of the bot
+	{
+		client.say(target,`My current version is ${version}. ♥`);
 		return;
 	}
 }
