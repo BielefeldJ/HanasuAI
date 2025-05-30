@@ -70,18 +70,21 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 	//ignore empty messages.
 	if(!msg.replace(/\s/g, '').length)
 		return;		
-	
+
 	//temporarily replace all non english user.
 	//If a user was tagged in the message (user starting with @) and the name was written in Japanese Character like @こんばんは, HanasuAI thought the whole Message
 	//was japanese and tryed to translate this into english. Eventho the message was english in the first pace.
 	//It's only temp because Deepl handels Proper noun quite good. No need to remove them completly
 	//This Regex matches an @ at the beginning of a word followed by 1 to many non-word character like a-z A-Z or 0-9. The last \B ends the word.
-	let msgWithoutLocalNames = msg.replace(/\B@\W+\B/g, "")
-	
+	let msgWithoutLocalNames = msg.replace(/\B@\W+\B/g, "");
+
+	// also remove names that are written in latin characters, like @HanasuAI or @HanasuAI123 as franc got confused with them as well.
+	msgWithoutLocalNames = msg.replace(/\B@\w+/g, ""); 
+
 	//detect the language that was used in the message
 	const detectLang = franc(msgWithoutLocalNames, { minLength: 5 });
 	const defaultLanguage = channelconfig[channelname].defaultLanguage;
-	
+
 	//choose the correct target language 
 	const targetLanguage = config.autoTranslateLanguageMappings[defaultLanguage](detectLang);
 	
