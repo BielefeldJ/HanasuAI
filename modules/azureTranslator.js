@@ -35,7 +35,11 @@ class AzureTranslator {
             const translation = await this.sendAPIRequest(inputtext, lang);
             if (translation && translation.text) {
                 const chatCommand = italic ? "/me " : "";
-                this.client.say(target, `${chatCommand}${translation.text}`);
+				let chatmessage = translation.text;
+				// If recipient is provided, prepend it to the chat message
+				if (recipient)
+                    chatmessage = `${recipient} ${chatmessage}`;
+                this.client.say(target, `${chatCommand}${chatmessage}`);				
             } else {
                 let errmsg = `Azure Translate request failed.`;
                 if (!this.errorTimeout) {
