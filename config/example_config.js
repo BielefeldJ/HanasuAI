@@ -17,6 +17,13 @@ const DeeplConfig = {
 	//serviceUrl: 'https://api.deepl.com/v2/'  //for deepl pro
 }
 
+//Config for Azure Translator
+const AzureTranslatorConfig = {
+	apikey: 'AZURE_APIKEY', // Key for the Azure Translator API
+	endpoint: 'https://api.cognitive.microsofttranslator.com', // Azure endpoint
+	region: 'YOUR_REGION' // Azure region, e.g., 'westeurope'
+}
+
 //Twitch username of the Botowner
 const Botowner = "TWITCHUSERNAME";
 
@@ -38,7 +45,8 @@ const defaultChannelConfig = {
 	defaultLanguage: "jpn",
 	bannedWords: [],
 	autouser : [],
-	italic : false
+	italic : false,
+	useAzureTranslator : false
 }
 
 //language Mapping.
@@ -107,4 +115,4 @@ function checkChannelConfig(channelconfig)
 	return channelconfig;
 }
 
-module.exports = {tmiconf, DeeplConfig, Botowner, BotName, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, autoTranslateLanguageMappings, commandLanguageMappings};
+module.exports = {tmiconf, DeeplConfig, AzureTranslatorConfig, Botowner, BotName, StatisticsFile, AutoTranslateIgnoredUserGlobal, saveChannelConfig, loadChannelConfig, defaultChannelConfig, autoTranslateLanguageMappings, commandLanguageMappings};
