@@ -16,7 +16,7 @@ if(!channelconfig)
 
 //imports
 const tmi = require('tmi.js');
-const Translator = require('./modules/translator.js');
+const DeeplTranslator = require('./modules/deeplTranslator.js');
 const AzureTranslator = require('./modules/azureTranslator.js');
 const Stats = require('./modules/stats.js');
 const ChatMessage = require('./modules/chatmessage.js');
@@ -38,10 +38,10 @@ client.on('connected', onConnectedHandler);
 client.connect();
 
 //Create the Translator instance for Deepl
-const translator = new Translator();
-translator.setClient(client);
-translator.setAPIConfig(config.DeeplConfig);
-translator.setBotowner(config.Botowner);
+const deepLTranslator = new DeeplTranslator();
+deepLTranslator.setClient(client);
+deepLTranslator.setAPIConfig(config.DeeplConfig);
+deepLTranslator.setBotowner(config.Botowner);
 
 //Create the Translator instance for Azure
 const azureTranslator = new AzureTranslator();
@@ -95,7 +95,7 @@ function handelAutoTranslate(msg, target, recipient, channelname)
     if (channelconfig[channelname].useAzureTranslator && config.AzureTranslatorConfig) {
         azureTranslator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
     } else {
-        translator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
+        deepLTranslator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
     }
 	Stats.incrementCounter(target.substring(1), targetLanguage);
 }
@@ -110,7 +110,7 @@ function botownerCommand(command, target, channelname)
 	}
 	else if(command.commandName === 'api') //sends the API usage of the month in chat
 	{
-		translator.sendAPIUsageToChat(target);
+		deepLTranslator.sendAPIUsageToChat(target);
 		return;
 	}		
 	else if(command.commandName === 'broadcast' && command.hasParameter) //sends a message to all channels
@@ -371,7 +371,7 @@ function translateCommand(command, target, channelname)
 	{
 		try 
 		{
-			translator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, channelconfig[channelname].italic);
+			deepLTranslator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, channelconfig[channelname].italic);
 			Stats.incrementCounter(target.substring(1), targetLanguage);			
 		} catch (error) 
 		{

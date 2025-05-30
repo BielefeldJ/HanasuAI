@@ -2,7 +2,7 @@ const axios = require('axios');
 const { logger } = require('./logger.js');
 
 // This class holds functions for the Deepl API and sends answers directly to the chat client.
-class Translator {
+class DeeplTranslator {
     constructor() {
         this.errorTimeout = false;
         this.client = null;
@@ -13,18 +13,18 @@ class Translator {
 
     setClient(client) {
         this.client = client;
-        logger.log("TRANSLATOR INFO: Twitch client set.");
+        logger.log("DEEPL TRANSLATOR INFO: Twitch client set.");
     }
 
     setAPIConfig(config) {
         this.APIKEY = config.apikey;
         this.URL = config.serviceUrl;
-        logger.log("TRANSLATOR INFO: Deepl config set.");
+        logger.log("DEEPL TRANSLATOR INFO: Deepl config set.");
     }
 
     setBotowner(botowner) {
         this.botowner = botowner;
-        logger.log("TRANSLATOR INFO: Botowner set.");
+        logger.log("DEEPL TRANSLATOR INFO: Botowner set.");
     }
 
     // Translates given text and sends it to twitch chat
@@ -94,38 +94,38 @@ class Translator {
         return axios(requestOptions)
             .then(response => {
                 if (response.status === 200)
-                    return new Translator.ApiData(response.data, response.status);
+                    return new DeeplTranslator.ApiData(response.data, response.status);
                 else
-                    return new Translator.ApiData(null, response.status);
+                    return new DeeplTranslator.ApiData(null, response.status);
             })
             .catch(error => {
                 const status = error.response ? error.response.status : 500;
                 logger.error("AXIOS ERROR: " + error);
                 if (error.response && error.response.data)
                     logger.error("AXIOS ERROR: " + error.response.data);
-                return new Translator.ApiData(null, status);
+                return new DeeplTranslator.ApiData(null, status);
             });
     }
 }
 
 // Helper class for API responses
-Translator.ApiData = function(apidata, statusCode) {
+DeeplTranslator.ApiData = function(apidata, statusCode) {
     this.resdata = apidata;
     this.statusCode = statusCode;
 };
 
-Translator.ApiData.prototype.rawdata = function () {
+DeeplTranslator.ApiData.prototype.rawdata = function () {
     return this.resdata;
 };
 
-Translator.ApiData.prototype.answer = function() {
+DeeplTranslator.ApiData.prototype.answer = function() {
     return this.resdata && this.resdata.translations && this.resdata.translations[0]
         ? this.resdata.translations[0].text
         : '';
 };
 
-Translator.ApiData.prototype.getstatusCode = function() {
+DeeplTranslator.ApiData.prototype.getstatusCode = function() {
     return this.statusCode;
 };
 
-module.exports = Translator;
+module.exports = DeeplTranslator;
