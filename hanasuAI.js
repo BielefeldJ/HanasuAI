@@ -226,60 +226,55 @@ function modCommand(command, target, channelname)
 		
 		return;
 	}
-	else if(command.commandName === 'ignoreuser' && command.hasParameter) //add or remove a user from the ignorelist
+	else if(command.commandName === 'ignoreuser' && command.hasParameter) 
 	{
 		const userToIgnore = getUsernameFromInput(command.inputtext);
 
-		if(!userToIgnore)
+		if(!userToIgnore) 
 		{
 			client.say(target,"Please provide a valid twitch username. (Not a displayname!)");
 			return;
 		}
 		const ignoredUsers = channelconfig[channelname].ignoreduser;
-		const added = toggleUserInList(ignoredUsers, userToIgnore);
+		const added = toggleItemInList(ignoredUsers, userToIgnore);
 
-		if (added) {
+		if (added) 
+		{
 			client.say(target, `Added user ${userToIgnore} to the ignorelist.`);
 			logger.log(`Added user ${userToIgnore} to the ignore list for ${target}`);
-		} else {
+		} else 
+		{
 			client.say(target, `Removed user ${userToIgnore} from the ignorelist.`);
 			logger.log(`Removed user ${userToIgnore} from the ignore list for ${target}`);
 		}
 		config.saveChannelConfig(channelconfig);
 		return;
 	}
-	else if(command.commandName === "banword" && command.hasParameter) //add or remove a word from the banned words list
+	else if(command.commandName === "banword" && command.hasParameter) 
 	{
 		const bannedWords = channelconfig[channelname].bannedWords;
-		const index = bannedWords.indexOf(command.inputtext);
+		const added = toggleItemInList(bannedWords, command.inputtext);
 
-		if(index !== -1)
-		{
-			bannedWords.splice(index, 1);
-			client.say(target, `Removed "${command.inputtext}" from the banned words list.`);
-			logger.log(`Removed ${command.inputtext} from the banned word list for ${target}`);
-		}
-		else
-		{
-			bannedWords.push(command.inputtext);
+		if (added) {
 			client.say(target, `Added "${command.inputtext}" to the banned words list.`);
 			logger.log(`Added ${command.inputtext} to the banned word list for ${target}`);
+		} else {
+			client.say(target, `Removed "${command.inputtext}" from the banned words list.`);
+			logger.log(`Removed ${command.inputtext} from the banned word list for ${target}`);
 		}
 		config.saveChannelConfig(channelconfig);
 		return;
 	}
-	else if(command.commandName === "autouser" && command.hasParameter) //add or remove a user from the auto translate list
+	else if(command.commandName === "autouser" && command.hasParameter) 
 	{
 		const autoTranslateUser = getUsernameFromInput(command.inputtext);
 
-		if(!autoTranslateUser)
-		{
+		if(!autoTranslateUser) {
 			client.say(target,"Please provide a valid twitch username. (Not a displayname!)");
 			return;
 		}
-
 		const autotranslateUserList = channelconfig[channelname].autouser;
-		const added = toggleUserInList(autotranslateUserList, autoTranslateUser);
+		const added = toggleItemInList(autotranslateUserList, autoTranslateUser);
 
 		if (added) {
 			client.say(target, `Added user ${autoTranslateUser} to the auto translation list.`);
@@ -530,17 +525,13 @@ function getUsernameFromInput(input)
 		return null;
 }
 
-function toggleUserInList(list, username) 
-{
-    const index = list.indexOf(username);
-    if (index !== -1) 
-	{
+function toggleItemInList(list, item) {
+    const index = list.indexOf(item);
+    if (index !== -1) {
         list.splice(index, 1);
-        return false;
-    } 
-	else 
-	{
-        list.push(username);
-        return true;
+        return false; // removed
+    } else {
+        list.push(item);
+        return true; // added
     }
 }
