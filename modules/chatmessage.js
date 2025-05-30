@@ -17,6 +17,7 @@ class ChatMessage {
 	{
 		this.#removeURLs();
 		this.#removeBannedWords(bannedWords);
+		this.#removeCommandPrefixes();
 		//remove all the extra spaces 
 		this.#message = this.#message.replace(/\s+/g, ' ').trim();
 	}
@@ -36,6 +37,14 @@ class ChatMessage {
 	{
 		const urlRegex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[.\!\/\\w]*))?)/
 		this.#message = this.#message.replace(urlRegex, '');
+	}
+
+	//remove command prefixes from the message
+	#removeCommandPrefixes()
+	{
+		//if the message starts with a command prefix, remove the first word
+		if(this.isCommand())
+			this.#message = this.#message.substring(this.#message.indexOf(" ") +1);
 	}
 
 	//remove emotes from message, because they can mess up the translation. (Thanks to stefanjudis for this idea/example code on how to handle emotes)
