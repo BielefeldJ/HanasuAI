@@ -17,6 +17,7 @@ if(!channelconfig)
 //imports
 const tmi = require('tmi.js');
 const Translator = require('./modules/translator.js');
+const AzureTranslator = require('./modules/azureTranslator.js');
 const Stats = require('./modules/stats.js');
 const ChatMessage = require('./modules/chatmessage.js');
 const { checkSecretPhrase, getMidMentionReply, greetUser } = require('./modules/easterEggs.js');
@@ -36,10 +37,19 @@ client.on('connected', onConnectedHandler);
 // Connect to Twitch:
 client.connect();
 
-//Create the Translator for deepl
-Translator.setClient(client);
-Translator.setAPIConfig(config.DeeplConfig);
-Translator.setBotowner(config.Botowner);
+//Create the Translator instance for Deepl
+const translator = new Translator();
+translator.setClient(client);
+translator.setAPIConfig(config.DeeplConfig);
+translator.setBotowner(config.Botowner);
+
+//Create the Translator instance for Azure
+const azureTranslator = new AzureTranslator();
+if (config.AzureTranslatorConfig) {
+    azureTranslator.setClient(client);
+    azureTranslator.setAPIConfig(config.AzureTranslatorConfig);
+    azureTranslator.setBotowner(config.Botowner);
+}
 
 const commandPrefixes = ['!', '！']; //command prefixes for the bot
 
@@ -81,7 +91,12 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 	if(detectLang !== "jpn" && !/[A-Za-z ]{5,}/.test(msg))
 		return;
 
-	Translator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
+    // Use Deepl by default, or Azure if configured for this channel
+    if (channelconfig[channelname].useAzureTranslator && config.AzureTranslatorConfig) {
+        azureTranslator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
+    } else {
+        translator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
+    }
 	Stats.incrementCounter(target.substring(1), targetLanguage);
 }
 
@@ -95,7 +110,7 @@ function botownerCommand(command, target, channelname)
 	}
 	else if(command.commandName === 'api') //sends the API usage of the month in chat
 	{
-		Translator.sendAPIUsageToChat(target);
+		translator.sendAPIUsageToChat(target);
 		return;
 	}		
 	else if(command.commandName === 'broadcast' && command.hasParameter) //sends a message to all channels
@@ -146,6 +161,19 @@ function botownerCommand(command, target, channelname)
 	else if(command.commandName === "version") //get the current version of the bot
 	{
 		client.say(target,`My current version is ${version}. ♥`);
+		return;
+	}
+	else if(command.commandName === "settranslator" && command.hasParameter) //change the translator for a channel
+	{
+		const value = command.inputtext.trim().toLowerCase();
+		if (value === "azure" || value === "deepl") 
+		{
+			channelconfig[channelname].useAzureTranslator = (value === "azure");
+			config.saveChannelConfig(channelconfig);
+			client.say(target, `Translator for this channel set to ${value === "azure" ? "Azure" : "DeepL"}.`);
+			logger.log(`Set translator for ${channelname} to ${value}`);
+		} else 
+			client.say(target, "Please specify either 'azure' or 'deepl'. Example: !settranslator azure");
 		return;
 	}
 }
@@ -343,7 +371,7 @@ function translateCommand(command, target, channelname)
 	{
 		try 
 		{
-			Translator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, channelconfig[channelname].italic);
+			translator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, channelconfig[channelname].italic);
 			Stats.incrementCounter(target.substring(1), targetLanguage);			
 		} catch (error) 
 		{

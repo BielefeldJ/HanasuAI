@@ -5,6 +5,7 @@
 		"defaultLanguage" : "ISO 639-3 language code!",
 		"bannedWords" : [],
 		"autouser" : [],
-		"italic" : false
+		"italic" : false,
+		"useAzureTranslator": false
 	}
 }
