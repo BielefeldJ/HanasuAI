@@ -357,7 +357,7 @@ function userCommand(command, target, channelname)
 	}
 }
 
-function translateCommand(command, target, channelname)
+function translateCommand(command, target, message, italic)
 {
 	//get the language code for the command
 	const targetLanguage = config.commandLanguageMappings[command.commandName];
@@ -366,11 +366,11 @@ function translateCommand(command, target, channelname)
 	{
 		try 
 		{
-			deepLTranslator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, channelconfig[channelname].italic);
+			deepLTranslator.translateToChat(target, command.recipient, message, targetLanguage, italic);
 			Stats.incrementCounter(target.substring(1), targetLanguage);			
 		} catch (error) 
 		{
-			logger.error(`Error translating this message to ${languageCode}: ${command.inputtext}`);
+			logger.error(`Error translating this message to ${languageCode}: ${message}`);
 			logger.error(error);
 		}
 
@@ -398,22 +398,6 @@ function onMessageHandler (target, user, msg, self)
 
 	// Create a new ChatMessage object
 	const chatMessage = new ChatMessage(msg, commandPrefixes);
-
-	//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
-	chatMessage.removeEmotes(user.emotes);
-	
-	chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); //remove URLs and banned words from the message
-	
-	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
-	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
-	//this has to be after the emote section. If not, the position of the emotes would be wrong, because the original message has already been edited
-	let recipient = chatMessage.getRecipient();
-
-	//check if autotranslation is enabled for target channel 
-	const autoTranslateChannel = channelconfig[channelname].autotranslate;		
-	//check if auto translation is enabled for a user
-	const autoTranslateUser = channelconfig[channelname].autouser.includes(user.username);		
-	const canAutoTranslate = autoTranslateChannel || autoTranslateUser;
 
 	//If no command Prefix: handle autotranslation if enabled.
 	if (chatMessage.isCommand())  
@@ -445,11 +429,35 @@ function onMessageHandler (target, user, msg, self)
 				modCommand(command, target, channelname);
 			default:
 				userCommand(command, target, channelname);
-				translateCommand(command, target, channelname);
+				if(config.commandLanguageMappings.hasOwnProperty(command.commandName)) //check if the command is a translation command
+				{
+					//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
+					chatMessage.removeEmotes(user.emotes);		
+					//remove URLs and banned words from the message
+					chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); 		
+					translateCommand(command, target, chatMessage.getMessage(), channelconfig[channelname].italic);
+				}
 		}		
 	}	
 	else
 	{
+
+		//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
+		chatMessage.removeEmotes(user.emotes);		
+		chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); //remove URLs and banned words from the message
+		
+		//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
+		//If this is the case, remove the first word to check if the user used a command while using the reply feature.
+		//this has to be after the emote section. If not, the position of the emotes would be wrong, because the original message has already been edited
+		let recipient = chatMessage.getRecipient();
+
+		//check if autotranslation is enabled for target channel 
+		const autoTranslateChannel = channelconfig[channelname].autotranslate;		
+		//check if auto translation is enabled for a user
+		const autoTranslateUser = channelconfig[channelname].autouser.includes(user.username);		
+		const canAutoTranslate = autoTranslateChannel || autoTranslateUser;
+
+		//Easter eggs and greetings stuff
 		const greeting = greetUser(user.username);
 		if (greeting)
 			client.say(target, `@${user.username} ${greeting}`);
