@@ -71,6 +71,7 @@ Command | Description | Usage
 `!broadcast` | Sends a message to every channel that uses HanasuAI | `!broadcast <text>`
 `!joinchannel` | Activates the bot on a twitch channel aka joins it | `!joinchannel <channelname>`
 `!removechannel` | Removes the bot from a twitch channel | `!removechannel <channelname>`
+`!settranslator` | changed the translator for the current channel | `!settranslator azure|deepl`
 
 
 Help 
@@ -83,6 +84,7 @@ List of requirements
 -------------
 * [tmi.js](https://github.com/tmijs/tmi.js)
 * [Deepl API](https://www.deepl.com/pro?cta=header-prices/)
+* [Microsoft Azure](https://azure.microsoft.com/en-us/products/ai-services/ai-translator)
 * [node-schedule](https://github.com/node-schedule/node-schedule)
 * [axios](https://github.com/axios/axios) 
 * fs
