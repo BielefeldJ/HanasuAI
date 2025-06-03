@@ -2,6 +2,7 @@ class ChatMessage {
 
 	#message;
 	#commandPrefixes;
+	#recipient;
 
 	constructor(message, commandPrefixes) {
 		this.#message = message;
@@ -79,22 +80,22 @@ class ChatMessage {
 
 	getRecipient() 
 	{
-		let recipient = null;
 		const tagIndex = this.#message.indexOf('@');
 
 		if(tagIndex === 0)
 		{
 			const firstSpaceIndex = this.#message.indexOf(' ');
-			recipient = firstSpaceIndex !== -1 ? this.#message.substring(tagIndex, firstSpaceIndex) : this.#message;
+			this.#recipient = firstSpaceIndex !== -1 ? this.#message.substring(tagIndex, firstSpaceIndex) : this.#message;
 			this.#message = firstSpaceIndex !== -1 ? this.#message.substring(firstSpaceIndex + 1) : '';
 		}
 
-		return recipient;
+		return this.#recipient;
 	}
 	
 	isCommand() 
 	{
 		// Valid commands start with !		
+		this.getRecipient()
 		return this.#commandPrefixes.includes(this.#message.charAt(0));
 	}
 

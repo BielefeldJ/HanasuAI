@@ -444,15 +444,14 @@ function onMessageHandler (target, user, msg, self)
 	}	
 	else
 	{
-
-		//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
-		chatMessage.removeEmotes(user.emotes);		
-		chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); //remove URLs and banned words from the message
-		
 		//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
 		//If this is the case, remove the first word to check if the user used a command while using the reply feature.
 		//this has to be after the emote section. If not, the position of the emotes would be wrong, because the original message has already been edited
 		let recipient = chatMessage.getRecipient();
+		
+		//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
+		chatMessage.removeEmotes(user.emotes);		
+		chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); //remove URLs and banned words from the message		
 
 		//check if autotranslation is enabled for target channel 
 		const autoTranslateChannel = channelconfig[channelname].autotranslate;		
