@@ -8,7 +8,7 @@
   },
   "name": "hanasuai",
   "description": "HanasuAI is a bot for translating text messages using the deepl API. The bot automatically detects the language of the message and translates it into the language specified with the command. \r HanasuAI also has an auto-translating function using the IBM Watson translator. The bot translates every message into Japanese or English, depending on what language was used in the message.",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "main": "hanasuAI.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
