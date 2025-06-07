@@ -458,6 +458,10 @@ function onMessageHandler (target, user, msg, self)
 		//check if auto translation is enabled for a user
 		const autoTranslateUser = channelconfig[channelname].autouser.includes(user.username);		
 		const canAutoTranslate = autoTranslateChannel || autoTranslateUser;
+		
+		//check if user is on ignorelist 
+		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
+			return;
 
 		//Easter eggs and greetings stuff
 		const greeting = greetUser(user.username);
@@ -482,10 +486,6 @@ function onMessageHandler (target, user, msg, self)
 		}
 
 		if(!canAutoTranslate)
-			return;
-
-		//check if user is on ignorelist 
-		if(config.AutoTranslateIgnoredUserGlobal.includes(user.username))
 			return;
 	
 		handelAutoTranslate(message, target, recipient, channelname);		
