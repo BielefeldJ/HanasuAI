@@ -94,8 +94,7 @@ class ChatMessage {
 	
 	isCommand() 
 	{
-		// Valid commands start with !		
-		this.getRecipient()
+		// Valid commands start with !
 		return this.#commandPrefixes.includes(this.#message.charAt(0));
 	}
 

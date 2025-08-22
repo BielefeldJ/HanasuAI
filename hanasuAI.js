@@ -402,6 +402,15 @@ function onMessageHandler (target, user, msg, self)
 	// Create a new ChatMessage object
 	const chatMessage = new ChatMessage(msg, commandPrefixes);
 
+	//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
+	//remove emotes before getting the recipient! emotes are deleted by checking fixed positions in the message string. 
+	chatMessage.removeEmotes(user.emotes);
+
+	//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
+	//If this is the case, remove the first word to check if the user used a command while using the reply feature.
+	//this has to be after the emote section. If not, the position of the emotes would be wrong, because the original message has already been edited
+	let recipient = chatMessage.getRecipient();
+
 	//If no command Prefix: handle autotranslation if enabled.
 	if (chatMessage.isCommand())  
 	{
@@ -433,9 +442,7 @@ function onMessageHandler (target, user, msg, self)
 			default:
 				userCommand(command, target, channelname);
 				if(config.commandLanguageMappings.hasOwnProperty(command.commandName)) //check if the command is a translation command
-				{
-					//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
-					chatMessage.removeEmotes(user.emotes);		
+				{		
 					//remove URLs and banned words from the message
 					chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); 		
 					translateCommand(command, target, chatMessage.getMessage(), channelconfig[channelname].italic);
@@ -443,14 +450,7 @@ function onMessageHandler (target, user, msg, self)
 		}		
 	}	
 	else
-	{
-		//If someone hits reply in the chat, the chat will automaticly add the targeted user as first word, starting with an @
-		//If this is the case, remove the first word to check if the user used a command while using the reply feature.
-		//this has to be after the emote section. If not, the position of the emotes would be wrong, because the original message has already been edited
-		let recipient = chatMessage.getRecipient();
-		
-		//"user" includes all meta informations about the user, that sends the message. It also includes the emotes used.
-		chatMessage.removeEmotes(user.emotes);		
+	{		
 		chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); //remove URLs and banned words from the message		
 
 		//check if autotranslation is enabled for target channel 
