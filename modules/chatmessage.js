@@ -109,20 +109,36 @@ class ChatMessage {
 
 		command.recipient = this.getRecipient(); //get the recipient of the message if there is one
 
+		const message = this.#message.slice(1); //remove the command prefix for easier handling
+
+		//find the first space between command and text
 		const spaceIndex = this.#message.indexOf(" ");
 
+		//sometimes for japanese users there is no space after the command 
+		//so we need can check for the first non roman character as well
+		const nonRomanRegex = /[^\u0000-\u007F]/;
+		const firstNonRomanIndex = message.search(nonRomanRegex);	
+
 		//used to check if the user send parameter
-		if(spaceIndex < 0)
+		if(firstNonRomanIndex === 2) // this does only work for translate commands!! as I check for fixed 2 character commands here.
 		{
-			command.commandName = this.#message.slice(1).toLowerCase();
+			// The command name is the first two characters one and remove the !:
+			command.commandName = message.substring(0, 2).toLowerCase().trim();
+			// the rest of the message is probably the text to translate
+			command.inputtext = message.substring(2).trim();
+			command.hasParameter = true;					
+		}
+		else if(spaceIndex < 0)
+		{
+			command.commandName = message.toLowerCase();
 			command.hasParameter = false;
 		}
 		else
 		{
 			// The command name is the first substring one and remove the !:
-			command.commandName = this.#message.substring(1, spaceIndex).toLowerCase();
+			command.commandName = message.substring(0, spaceIndex).toLowerCase().trim();
 			//The message that should be translated and remove the first space 
-			command.inputtext = this.#message.substring(spaceIndex +1);
+			command.inputtext = message.substring(spaceIndex).trim();
 			command.hasParameter = true;					
 		}
 		
