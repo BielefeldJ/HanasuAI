@@ -360,7 +360,7 @@ function userCommand(command, target, channelname)
 	}
 }
 
-function translateCommand(command, target, message, italic)
+function translateCommand(command, target, italic)
 {
 	//get the language code for the command
 	const targetLanguage = config.commandLanguageMappings[command.commandName];
@@ -369,11 +369,11 @@ function translateCommand(command, target, message, italic)
 	{
 		try 
 		{
-			deepLTranslator.translateToChat(target, command.recipient, message, targetLanguage, italic);
+			deepLTranslator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, italic);
 			Stats.incrementCounter(target.substring(1), targetLanguage);			
 		} catch (error) 
 		{
-			logger.error(`Error translating this message to ${languageCode}: ${message}`);
+			logger.error(`Error translating this message to ${languageCode}: ${command.inputtext}`);
 			logger.error(error);
 		}
 
@@ -445,7 +445,7 @@ function onMessageHandler (target, user, msg, self)
 				{		
 					//remove URLs and banned words from the message
 					chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); 		
-					translateCommand(command, target, chatMessage.getMessage(), channelconfig[channelname].italic);
+					translateCommand(command, target, channelconfig[channelname].italic);
 				}
 		}		
 	}	
