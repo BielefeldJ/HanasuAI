@@ -1,4 +1,4 @@
-FROM node:23-alpine
+FROM node:25-alpine
 
 LABEL maintainer="BielefeldJ"
 LABEL description="HanasuAI Docker"
