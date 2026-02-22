@@ -44,7 +44,7 @@ const defaultChannelConfig = {
 	ignoreduser: [],
 	defaultLanguage: "jpn",
 	bannedWords: [],
-	autouser : [],
+	autouser : {},
 	italic : false,
 	useAzureTranslator : false
 }

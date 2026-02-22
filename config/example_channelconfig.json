@@ -4,7 +4,7 @@
 		"ignoreduser":[],
 		"defaultLanguage" : "ISO 639-3 language code!",
 		"bannedWords" : [],
-		"autouser" : [],
+		"autouser" : { "username": "language code" },
 		"italic" : false,
 		"useAzureTranslator": false
 	}
