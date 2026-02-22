@@ -65,7 +65,7 @@ function wasTaggedMidMessage(message)
 }
 
 //function to handle auto translation
-function handelAutoTranslate(msg, target, recipient, channelname)
+function handelAutoTranslate(msg, target, recipient, channelname, autoUserLanguage)
 {
 	//ignore empty messages.
 	if(!msg.replace(/\s/g, '').length)
@@ -86,7 +86,7 @@ function handelAutoTranslate(msg, target, recipient, channelname)
 	const defaultLanguage = channelconfig[channelname].defaultLanguage;
 
 	//choose the correct target language 
-	const targetLanguage = config.autoTranslateLanguageMappings[defaultLanguage](detectLang);
+	const targetLanguage = autoUserLanguage ? autoUserLanguage : config.autoTranslateLanguageMappings[defaultLanguage](detectLang);
 	
 	//check if the english message has at least 5 character.
 	//This way I can ignore most messages like "hehe" "xD" or something like this. No need to translate them.
@@ -268,24 +268,47 @@ function modCommand(command, target, channelname)
 		config.saveChannelConfig(channelconfig);
 		return;
 	}
-	else if(command.commandName === "autouser" && command.hasParameter) 
+	else if(command.commandName === "autouser") 
 	{
-		const autoTranslateUser = getUsernameFromInput(command.inputtext);
+		const commandParts = command.inputtext.split(" ");
 
+		if(commandParts.length < 1) {
+			client.say(target,"Please provide a twitch username and a language code. Example: !autouser HanasuAI en");
+			return;
+		}
+
+		const autoTranslateUser = getUsernameFromInput(commandParts[0]);
+		
 		if(!autoTranslateUser) {
 			client.say(target,"Please provide a valid twitch username. (Not a displayname!)");
 			return;
 		}
-		const autotranslateUserList = channelconfig[channelname].autouser;
-		const added = toggleItemInList(autotranslateUserList, autoTranslateUser);
 
-		if (added) {
-			client.say(target, `Added user ${autoTranslateUser} to the auto translation list.`);
-			logger.log(`Added user ${autoTranslateUser} to the auto translation list for ${target}`);
-		} else {
-			client.say(target, `Removed user ${autoTranslateUser} from the auto translation.`);
-			logger.log(`Removed user ${autoTranslateUser} from the auto translate list for ${target}`);
+		const autoTranslateUserLanguage = commandParts[1]; //get the second part of the command as language code. Example: !autouser HanasuAI en -> autoTranslateUserLanguage = "en"
+		
+		if(autoTranslateUser && !autoTranslateUserLanguage) //if no language code was provided, remove the user from the auto translate list
+		{
+			if(channelconfig[channelname].autouser.hasOwnProperty(autoTranslateUser)) {
+				delete channelconfig[channelname].autouser[autoTranslateUser];
+				client.say(target, `Removed user ${autoTranslateUser} from the auto translation list.`);
+				logger.log(`Removed user ${autoTranslateUser} from the auto translate list for ${target}`);
+				config.saveChannelConfig(channelconfig);
+				return;
+			}
 		}
+
+		if(!autoTranslateUserLanguage || !config.commandLanguageMappings.hasOwnProperty(autoTranslateUserLanguage)) {
+			client.say(target, `Please provide a valid language code. (${Object.keys(config.commandLanguageMappings).join(", ")})`);
+			return;
+		}
+
+		//set the language for the user in the config. If the user is not in the list, it will be added. If the user is already in the list, it will be updated with the new language code.
+		const targetLanguageCode = config.commandLanguageMappings[autoTranslateUserLanguage];
+		channelconfig[channelname].autouser[autoTranslateUser] = targetLanguageCode; 
+
+		client.say(target, `Added user ${autoTranslateUser} to the auto translation list for ${targetLanguageCode}.`);
+		logger.log(`Added user ${autoTranslateUser} to the auto translation list for ${target} with language ${targetLanguageCode}`);
+
 		config.saveChannelConfig(channelconfig);
 		return;
 	}
@@ -456,7 +479,7 @@ function onMessageHandler (target, user, msg, self)
 		//check if autotranslation is enabled for target channel 
 		const autoTranslateChannel = channelconfig[channelname].autotranslate;		
 		//check if auto translation is enabled for a user
-		const autoTranslateUser = channelconfig[channelname].autouser.includes(user.username);		
+		const autoTranslateUser = channelconfig[channelname].autouser.hasOwnProperty(user.username);		
 		const canAutoTranslate = autoTranslateChannel || autoTranslateUser;
 		
 		//check if user is on ignorelist 
@@ -487,8 +510,9 @@ function onMessageHandler (target, user, msg, self)
 
 		if(!canAutoTranslate)
 			return;
-	
-		handelAutoTranslate(message, target, recipient, channelname);		
+
+		const targetLanguage = channelconfig[channelname].autouser[user.username];	
+		handelAutoTranslate(message, target, recipient, channelname, targetLanguage);		
 	}	
 }
 
