@@ -46,9 +46,9 @@ deepLTranslator.setBotowner(config.Botowner);
 //Create the Translator instance for Azure
 const azureTranslator = new AzureTranslator();
 if (config.AzureTranslatorConfig) {
-    azureTranslator.setClient(client);
-    azureTranslator.setAPIConfig(config.AzureTranslatorConfig);
-    azureTranslator.setBotowner(config.Botowner);
+	azureTranslator.setClient(client);
+	azureTranslator.setAPIConfig(config.AzureTranslatorConfig);
+	azureTranslator.setBotowner(config.Botowner);
 }
 
 const commandPrefixes = ['!', '！']; //command prefixes for the bot
@@ -59,9 +59,9 @@ const MENTION_COOLDOWN_MS = 10000; // 10 seconds cooldown
 // function to check if hanasuai was tagged in the middle of a message
 function wasTaggedMidMessage(message) 
 {
-    const botName = config.BotName?.toLowerCase() || "hanasuai"; // fallback if not set
-    const words = message.toLowerCase().split(/\s+/);
-    return words.length > 1 && words.slice(1).some(word => word.includes(botName));
+	const botName = config.BotName?.toLowerCase() || "hanasuai"; // fallback if not set
+	const words = message.toLowerCase().split(/\s+/);
+	return words.length > 1 && words.slice(1).some(word => word.includes(botName));
 }
 
 //function to handle auto translation
@@ -94,12 +94,12 @@ function handelAutoTranslate(msg, target, recipient, channelname, autoUserLangua
 	if(detectLang !== "jpn" && !/[A-Za-z ]{5,}/.test(msg))
 		return;
 
-    // Use Deepl by default, or Azure if configured for this channel
-    if (channelconfig[channelname].useAzureTranslator && config.AzureTranslatorConfig) {
-        azureTranslator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
-    } else {
-        deepLTranslator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
-    }
+	// Use Deepl by default, or Azure if configured for this channel
+	if (channelconfig[channelname].useAzureTranslator && config.AzureTranslatorConfig) {
+		azureTranslator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
+	} else {
+		deepLTranslator.translateToChat(target, recipient, msg, targetLanguage, channelconfig[channelname].italic);
+	}
 	Stats.incrementCounter(target.substring(1), targetLanguage);
 }
 
@@ -383,7 +383,7 @@ function userCommand(command, target, channelname)
 	}
 }
 
-function translateCommand(command, target, italic)
+function translateCommand(command, target, italic, useAzure)
 {
 	//get the language code for the command
 	const targetLanguage = config.commandLanguageMappings[command.commandName];
@@ -392,11 +392,15 @@ function translateCommand(command, target, italic)
 	{
 		try 
 		{
-			deepLTranslator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, italic);
+		    if (useAzure) 
+        		azureTranslator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, italic);
+			else 
+				deepLTranslator.translateToChat(target, command.recipient, command.inputtext, targetLanguage, italic);
 			Stats.incrementCounter(target.substring(1), targetLanguage);			
-		} catch (error) 
+		} 
+		catch (error) 
 		{
-			logger.error(`Error translating this message to ${languageCode}: ${command.inputtext}`);
+			logger.error(`Error translating this message to ${targetLanguage}: ${command.inputtext}`);
 			logger.error(error);
 		}
 
@@ -467,8 +471,9 @@ function onMessageHandler (target, user, msg, self)
 				if(config.commandLanguageMappings.hasOwnProperty(command.commandName)) //check if the command is a translation command
 				{		
 					//remove URLs and banned words from the message
-					chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); 		
-					translateCommand(command, target, channelconfig[channelname].italic);
+					chatMessage.cleanMessage(channelconfig[channelname]?.bannedWords || []); 	
+					const useAzure = channelconfig[channelname].useAzureTranslator && config.AzureTranslatorConfig; //check if Azure Translator should be used for this channel	
+					translateCommand(command, target, channelconfig[channelname].italic, useAzure);
 				}
 		}		
 	}	
@@ -560,12 +565,12 @@ function getUsernameFromInput(input)
 }
 
 function toggleItemInList(list, item) {
-    const index = list.indexOf(item);
-    if (index !== -1) {
-        list.splice(index, 1);
-        return false; // removed
-    } else {
-        list.push(item);
-        return true; // added
-    }
+	const index = list.indexOf(item);
+	if (index !== -1) {
+		list.splice(index, 1);
+		return false; // removed
+	} else {
+		list.push(item);
+		return true; // added
+	}
 }
