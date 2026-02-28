@@ -8,13 +8,27 @@ const STATSPATH = 'stats/'
 //Module to save stats per channel and global
 var Statistics = {};
 
+// Builds a map from language code -> counter key name
+// e.g. { 'JA': 'toJP', 'EN-US': 'toEN', 'ES': 'toES', 'FR': 'toFR' }
+function getCounterKeyMap() {
+	const map = {};
+	for (const [cmdKey, langCode] of Object.entries(config.commandLanguageMappings)) 
+	{
+		if (!map[langCode] && /^[a-zA-Z]+$/.test(cmdKey)) 
+			map[langCode] = 'to' + cmdKey.toUpperCase();		
+	}
+	return map;
+}
+
 //function creates a new statsobject for a given channel
 Statistics.addChannelToStatsData = (channel) => {
-	let statsobject = {
-		channel : channel,
-		toJP : 0,
-		toEN : 0,
+	let statsobject = { channel : channel };
+
+	for (const key of Object.values(getCounterKeyMap())) 
+	{
+		statsobject[key] = 0;
 	}
+	
 	Statistics.statsdata.channellist.push(channel);
 	Statistics.statsdata.perChannel.push(statsobject);
 };
@@ -52,6 +66,7 @@ function initStats()
 		let data = fs.readFileSync(STATSPATH + config.StatisticsFile); //read stats file
 		Statistics.statsdata = JSON.parse(data);
 		//check if there are stats for a channel, thats not in the config anymore, remove object, if not in config
+		const counterKeyMap = getCounterKeyMap();
 		Statistics.statsdata.perChannel.forEach(channelstats => {			
 			if (!config.tmiconf.channels.includes(channelstats.channel)) 
 			{
@@ -63,8 +78,25 @@ function initStats()
 				index = Statistics.statsdata.channellist.indexOf(channelstats.channel);
 				if (index > -1)
 					Statistics.statsdata.channellist.splice(index, 1);
+			} else {
+				// ensure existing channel stats have all counter keys 
+				for (const key of Object.values(counterKeyMap)) 
+				{
+
+					if (channelstats[key] === undefined) 
+						channelstats[key] = 0;
+				}				
 			}		
 		});
+		// ensure Month and Total have all counter keys 
+		for (const key of Object.values(counterKeyMap)) 
+		{
+			if (Statistics.statsdata.Month[key] === undefined) 
+				Statistics.statsdata.Month[key] = 0;
+
+			if (Statistics.statsdata.Total[key] === undefined) 
+				Statistics.statsdata.Total[key] = 0;
+		}
 		//checks if channel given in config already have a stats object. If not, create one
 		config.tmiconf.channels.forEach(channel => {
 			if(!Statistics.statsdata.channellist.includes(channel))
@@ -85,17 +117,20 @@ function initStats()
 		{
 			logger.log('INFO STATS INIT: No stats file found. Creating one.')
 			//create empty StatsData object
+			const counterKeyMap = getCounterKeyMap();
+			const monthObj = {};
+			const totalObj = {};
+			for (const key of Object.values(counterKeyMap)) 
+			{
+				monthObj[key] = 0;
+				totalObj[key] = 0;
+			}
+
 			Statistics.statsdata = {
 				channellist : [],
 				perChannel : [],
-				Month : {
-					toJP : 0,
-					toEN : 0
-				},
-				Total : {
-					toJP : 0,
-					toEN : 0,
-				}
+				Month : monthObj,
+				Total : totalObj
 			}
 			//add all channels from config
 			config.tmiconf.channels.forEach(channel => {
@@ -116,22 +151,19 @@ initStats();
 
 //funcion to increment the counter for the channel this function got called and its given language
 //target = channel the command was used on
-//lang = language of wich counter should be counted
+//lang = language of which counter should be counted
 Statistics.incrementCounter = (target, lang) => {
+	const counterKeyMap = getCounterKeyMap();
+	const counterKey = counterKeyMap[lang];
+	if (!counterKey) 
+	{
+		logger.log('STATS INFO: No counter key found for language: ' + lang);
+		return;
+	}
 	Statistics.getChannelStats(target, channelstats =>	{
-		switch(lang)
-		{
-			case 'JA':
-				channelstats.toJP++;
-				Statistics.statsdata.Month.toJP++;
-				Statistics.statsdata.Total.toJP++;
-				break;
-			case 'EN-US': 
-				channelstats.toEN++;
-				Statistics.statsdata.Month.toEN++;
-				Statistics.statsdata.Total.toEN++;
-				break;
-		}
+		channelstats[counterKey] = (channelstats[counterKey] || 0) + 1;
+		Statistics.statsdata.Month[counterKey] = (Statistics.statsdata.Month[counterKey] || 0) + 1;
+		Statistics.statsdata.Total[counterKey] = (Statistics.statsdata.Total[counterKey] || 0) + 1;
 	});
 	Statistics.writeStatsToFileAsync();
 }
@@ -150,14 +182,19 @@ Statistics.getStatsGlobal = (callback) => {
 
 //function reserts the counter of every channel and the stats of the month
 Statistics.resetChannelStats = () => {
+	const counterKeyMap = getCounterKeyMap();
 	//reset on every channel
 	Statistics.statsdata.perChannel.forEach(channel => {
-		channel.toEN = 0;
-		channel.toJP = 0;
+		for (const key of Object.values(counterKeyMap)) 
+		{
+			channel[key] = 0;
+		}
 	});
 	//reset Month
-	Statistics.statsdata.Month.toJP = 0;
-	Statistics.statsdata.Month.toEN = 0;
+	for (const key of Object.values(counterKeyMap)) 
+	{
+		Statistics.statsdata.Month[key] = 0;
+	}
 }
 
 //This function will be executed every 1. day of the month based on the time zone, this bot is running
@@ -170,6 +207,6 @@ schedule.scheduleJob('0 0 1 * *', () => {
 	Statistics.resetChannelStats();
 	Statistics.writeStatsToFileSync();
 	logger.log('STATS INFO: Monthly counter reset triggered.')
-  });
+});
 
 module.exports = Statistics;
