@@ -33,7 +33,8 @@ class DeeplTranslator {
             "text": [ `${inputtext}` ],
             "target_lang": `${lang}`,
             "formality": "prefer_less",
-            "preserve_formatting": true
+            "preserve_formatting": true,
+            "model_type": "quality_optimized",
         });
 
         this.sendAPIRequest("POST", "translate", translateBody)
