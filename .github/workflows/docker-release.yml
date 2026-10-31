@@ -1,0 +1,45 @@
+name: Build and push Docker image
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: bielefeldj
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: vars
+        run: echo "hash=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: GIT_HASH=${{ steps.vars.outputs.hash }}
+          tags: |
+            bielefeldj/hanasuai:latest
+            bielefeldj/hanasuai:${{ github.event.release.tag_name }}
+            ghcr.io/bielefeldj/hanasuai:latest
+            ghcr.io/bielefeldj/hanasuai:${{ github.event.release.tag_name }}
